@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://expense-tracker-x0gb.onrender.com';
 const TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlYWE4OGEwYS0wZTcwLTRhYTEtODdmZC0wZDA2ZjgxNTZhODQiLCJlbWFpbCI6ImFkbWluQGV4cGVuc2UtdHJhY2tlci5jb20iLCJpYXQiOjE3Nzg2MTgyMDQsImV4cCI6MTc3OTIyMzAwNH0.M6PeIQxyVlmva_2CORxfcv53xC4kzTHF8qQraO7dPqE';
 
 const api = axios.create({
