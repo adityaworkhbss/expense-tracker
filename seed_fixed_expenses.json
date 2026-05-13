@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Salary Income",
+    "amount": 87500,
+    "active": "Yes",
+    "notes": "Monthly income"
+  },
+  {
+    "name": "Parent Support",
+    "amount": 40000,
+    "active": "Yes",
+    "notes": "Monthly support"
+  },
+  {
+    "name": "Rent",
+    "amount": 10000,
+    "active": "Yes",
+    "notes": "Monthly rent"
+  },
+  {
+    "name": "Insurance",
+    "amount": 15000,
+    "active": "Yes",
+    "notes": "Insurance premium"
+  }
+]

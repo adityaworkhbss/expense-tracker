@@ -1,0 +1,434 @@
+[
+  {
+    "date": "2026-04-19",
+    "description": "mummy fish curry",
+    "paymentMethod": "Credit Card",
+    "category": "Family Support",
+    "amount": 555,
+    "notes": "Food"
+  },
+  {
+    "date": "2026-04-18",
+    "description": "aloe vera",
+    "paymentMethod": "Credit Card",
+    "category": "Personal Care",
+    "amount": 670,
+    "notes": "Skincare"
+  },
+  {
+    "date": "2026-04-20",
+    "description": "Groceries",
+    "paymentMethod": "Credit Card",
+    "category": "Family Support",
+    "amount": 224,
+    "notes": "Weekly"
+  },
+  {
+    "date": "2026-04-20",
+    "description": "Skin Care",
+    "paymentMethod": "Credit Card",
+    "category": "Personal Care",
+    "amount": 1200,
+    "notes": "Products"
+  },
+  {
+    "date": "2026-04-20",
+    "description": "Momos",
+    "paymentMethod": "Credit Card",
+    "category": "Family Support",
+    "amount": 110,
+    "notes": "Snack"
+  },
+  {
+    "date": "2026-04-21",
+    "description": "Cigg ",
+    "paymentMethod": "Credit Card",
+    "category": "Miscellaneous",
+    "amount": 395,
+    "notes": ""
+  },
+  {
+    "date": "2026-04-22",
+    "description": "Cigg",
+    "paymentMethod": "Credit Card",
+    "category": "Miscellaneous",
+    "amount": 195,
+    "notes": ""
+  },
+  {
+    "date": "2026-04-23",
+    "description": "Dinner",
+    "paymentMethod": "Credit Card",
+    "category": "Dining",
+    "amount": 124,
+    "notes": ""
+  },
+  {
+    "date": "2026-04-26",
+    "description": "Dinner",
+    "paymentMethod": "Credit Card",
+    "category": "Dining",
+    "amount": 770,
+    "notes": ""
+  },
+  {
+    "date": "2026-04-27",
+    "description": "Dinner",
+    "paymentMethod": "Bank",
+    "category": "Dining",
+    "amount": 133,
+    "notes": ""
+  },
+  {
+    "date": "2026-04-27",
+    "description": "Cigg ",
+    "paymentMethod": "Bank",
+    "category": "Miscellaneous",
+    "amount": 100,
+    "notes": ""
+  },
+  {
+    "date": "2026-04-27",
+    "description": "Coffee",
+    "paymentMethod": "Bank",
+    "category": "Dining",
+    "amount": 114,
+    "notes": ""
+  },
+  {
+    "date": "2026-04-28",
+    "description": "Coffee",
+    "paymentMethod": "Bank",
+    "category": "Dining",
+    "amount": 114,
+    "notes": ""
+  },
+  {
+    "date": "2026-04-28",
+    "description": "Mummy dinner",
+    "paymentMethod": "Bank",
+    "category": "Family Support",
+    "amount": 170,
+    "notes": ""
+  },
+  {
+    "date": "2026-04-28",
+    "description": "Cigg ",
+    "paymentMethod": "Bank",
+    "category": "Miscellaneous",
+    "amount": 45,
+    "notes": ""
+  },
+  {
+    "date": "2026-04-28",
+    "description": "Cab ",
+    "paymentMethod": "Bank",
+    "category": "Transportation",
+    "amount": 176,
+    "notes": ""
+  },
+  {
+    "date": "2026-04-28",
+    "description": "Dinner",
+    "paymentMethod": "Bank",
+    "category": "Dining",
+    "amount": 208,
+    "notes": ""
+  },
+  {
+    "date": "2026-04-29",
+    "description": "Cigg",
+    "paymentMethod": "Bank",
+    "category": "Miscellaneous",
+    "amount": 140,
+    "notes": ""
+  },
+  {
+    "date": "2026-04-30",
+    "description": "Ciff",
+    "paymentMethod": "Bank",
+    "category": "Miscellaneous",
+    "amount": 160,
+    "notes": ""
+  },
+  {
+    "date": "2026-04-30",
+    "description": "Coffee",
+    "paymentMethod": "Bank",
+    "category": "Dining",
+    "amount": 114,
+    "notes": ""
+  },
+  {
+    "date": "2026-04-30",
+    "description": "Cab",
+    "paymentMethod": "Bank",
+    "category": "Transportation",
+    "amount": 134,
+    "notes": ""
+  },
+  {
+    "date": "2026-04-30",
+    "description": "Lincense ",
+    "paymentMethod": "Bank",
+    "category": "Utilities",
+    "amount": 500,
+    "notes": ""
+  },
+  {
+    "date": "2026-05-01",
+    "description": "Chakna ",
+    "paymentMethod": "Bank",
+    "category": "Entertainment",
+    "amount": 418,
+    "notes": ""
+  },
+  {
+    "date": "2026-05-01",
+    "description": "Soda",
+    "paymentMethod": "Bank",
+    "category": "Dining",
+    "amount": 256,
+    "notes": ""
+  },
+  {
+    "date": "2026-05-01",
+    "description": "Cigg",
+    "paymentMethod": "Bank",
+    "category": "Miscellaneous",
+    "amount": 100,
+    "notes": ""
+  },
+  {
+    "date": "2026-05-01",
+    "description": "Auto",
+    "paymentMethod": "Bank",
+    "category": "Transportation",
+    "amount": 67,
+    "notes": ""
+  },
+  {
+    "date": "2026-05-02",
+    "description": "Kamal Lending money",
+    "paymentMethod": "Bank",
+    "category": "Friends",
+    "amount": 1800,
+    "notes": ""
+  },
+  {
+    "date": "2026-05-03",
+    "description": "Playgroundd ",
+    "paymentMethod": "Bank",
+    "category": "Entertainment",
+    "amount": 560,
+    "notes": ""
+  },
+  {
+    "date": "2026-05-03",
+    "description": "License ",
+    "paymentMethod": "Bank",
+    "category": "Utilities",
+    "amount": 300,
+    "notes": ""
+  },
+  {
+    "date": "2026-05-03",
+    "description": "Netflix",
+    "paymentMethod": "Credit Card",
+    "category": "Entertainment",
+    "amount": 200,
+    "notes": ""
+  },
+  {
+    "date": "2026-05-04",
+    "description": "Travel to office",
+    "paymentMethod": "Bank",
+    "category": "Transportation",
+    "amount": 0,
+    "notes": ""
+  },
+  {
+    "date": "2026-05-04",
+    "description": "Cigg",
+    "paymentMethod": "Bank",
+    "category": "Miscellaneous",
+    "amount": 160,
+    "notes": ""
+  },
+  {
+    "date": "2026-05-05",
+    "description": "Breakfast",
+    "paymentMethod": "Bank",
+    "category": "Dining",
+    "amount": 45,
+    "notes": ""
+  },
+  {
+    "date": "2026-05-05",
+    "description": "Chakna",
+    "paymentMethod": "Bank",
+    "category": "Miscellaneous",
+    "amount": 148,
+    "notes": ""
+  },
+  {
+    "date": "2026-05-06",
+    "description": "Dinner",
+    "paymentMethod": "Bank",
+    "category": "Dining",
+    "amount": 200,
+    "notes": ""
+  },
+  {
+    "date": "2026-05-06",
+    "description": "Cigg",
+    "paymentMethod": "Bank",
+    "category": "Miscellaneous",
+    "amount": 50,
+    "notes": ""
+  },
+  {
+    "date": "2026-05-07",
+    "description": "Cigg",
+    "paymentMethod": "Bank",
+    "category": "Miscellaneous",
+    "amount": 105,
+    "notes": ""
+  },
+  {
+    "date": "2026-05-07",
+    "description": "Gatorade ",
+    "paymentMethod": "Bank",
+    "category": "Dining",
+    "amount": 22,
+    "notes": ""
+  },
+  {
+    "date": "2026-05-07",
+    "description": "Biryani",
+    "paymentMethod": "Bank",
+    "category": "Dining",
+    "amount": 300,
+    "notes": ""
+  },
+  {
+    "date": "2026-05-08",
+    "description": "Cigg",
+    "paymentMethod": "Bank",
+    "category": "Miscellaneous",
+    "amount": 90,
+    "notes": ""
+  },
+  {
+    "date": "2026-05-08",
+    "description": "Apple Music",
+    "paymentMethod": "Bank",
+    "category": "Entertainment",
+    "amount": 40,
+    "notes": ""
+  },
+  {
+    "date": "2026-05-08",
+    "description": "Pizza coke",
+    "paymentMethod": "Bank",
+    "category": "Dining",
+    "amount": 145,
+    "notes": ""
+  },
+  {
+    "date": "2026-05-09",
+    "description": "Cigg",
+    "paymentMethod": "Bank",
+    "category": "Miscellaneous",
+    "amount": 160,
+    "notes": ""
+  },
+  {
+    "date": "2026-05-09",
+    "description": "Travel",
+    "paymentMethod": "Bank",
+    "category": "Transportation",
+    "amount": 200,
+    "notes": ""
+  },
+  {
+    "date": "2026-05-09",
+    "description": "Mummy travel",
+    "paymentMethod": "Bank",
+    "category": "Family Support",
+    "amount": 150,
+    "notes": ""
+  },
+  {
+    "date": "2026-05-10",
+    "description": "Mummy groceciers ",
+    "paymentMethod": "Bank",
+    "category": "Family Support",
+    "amount": 490,
+    "notes": ""
+  },
+  {
+    "date": "2026-05-11",
+    "description": "Gracie's",
+    "paymentMethod": "Bank",
+    "category": "Groceries",
+    "amount": 88,
+    "notes": ""
+  },
+  {
+    "date": "2026-05-11",
+    "description": "Auto",
+    "paymentMethod": "Bank",
+    "category": "Transportation",
+    "amount": 127,
+    "notes": ""
+  },
+  {
+    "date": "2026-05-11",
+    "description": "Split clear",
+    "paymentMethod": "Bank",
+    "category": "Friends",
+    "amount": 1913,
+    "notes": ""
+  },
+  {
+    "date": "2026-05-11",
+    "description": "Cigg",
+    "paymentMethod": "Bank",
+    "category": "Miscellaneous",
+    "amount": 40,
+    "notes": ""
+  },
+  {
+    "date": "2026-05-11",
+    "description": "Lunch",
+    "paymentMethod": "Bank",
+    "category": "Dining",
+    "amount": 134,
+    "notes": ""
+  },
+  {
+    "date": "2026-05-12",
+    "description": "Cigg",
+    "paymentMethod": "Bank",
+    "category": "Miscellaneous",
+    "amount": 110,
+    "notes": ""
+  },
+  {
+    "date": "2026-05-12",
+    "description": "Cab",
+    "paymentMethod": "Bank",
+    "category": "Transportation",
+    "amount": 173,
+    "notes": ""
+  },
+  {
+    "date": "2026-05-12",
+    "description": "Eggs",
+    "paymentMethod": "Bank",
+    "category": "Groceries",
+    "amount": 85,
+    "notes": ""
+  }
+]

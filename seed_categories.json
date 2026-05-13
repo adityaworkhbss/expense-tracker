@@ -1,0 +1,79 @@
+[
+  {
+    "id": "CAT001",
+    "name": "Groceries",
+    "type": "Variable",
+    "group": "Essential",
+    "active": "Yes"
+  },
+  {
+    "id": "CAT002",
+    "name": "Dining",
+    "type": "Variable",
+    "group": "Lifestyle",
+    "active": "Yes"
+  },
+  {
+    "id": "CAT003",
+    "name": "Transportation",
+    "type": "Variable",
+    "group": "Essential",
+    "active": "Yes"
+  },
+  {
+    "id": "CAT004",
+    "name": "Utilities",
+    "type": "Variable",
+    "group": "Essential",
+    "active": "Yes"
+  },
+  {
+    "id": "CAT005",
+    "name": "Healthcare",
+    "type": "Variable",
+    "group": "Essential",
+    "active": "Yes"
+  },
+  {
+    "id": "CAT006",
+    "name": "Entertainment",
+    "type": "Variable",
+    "group": "Lifestyle",
+    "active": "Yes"
+  },
+  {
+    "id": "CAT007",
+    "name": "Shopping",
+    "type": "Variable",
+    "group": "Lifestyle",
+    "active": "Yes"
+  },
+  {
+    "id": "CAT008",
+    "name": "Personal Care",
+    "type": "Variable",
+    "group": "Lifestyle",
+    "active": "Yes"
+  },
+  {
+    "id": "CAT009",
+    "name": "Family Support",
+    "type": "Variable",
+    "group": "Essential",
+    "active": "Yes"
+  },
+  {
+    "id": "CAT010",
+    "name": "Friends",
+    "type": "Variable",
+    "group": "Lifestyle",
+    "active": "Yes"
+  },
+  {
+    "id": "CAT011",
+    "name": "Miscellaneous",
+    "type": "Variable",
+    "group": "Other",
+    "active": "Yes"
+  }
+]

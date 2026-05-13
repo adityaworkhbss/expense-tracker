@@ -1,0 +1,56 @@
+[
+  {
+    "month": 1,
+    "monthName": "Apr"
+  },
+  {
+    "month": 2,
+    "monthName": "May"
+  },
+  {
+    "month": 3,
+    "monthName": "Jun"
+  },
+  {
+    "month": 4,
+    "monthName": "Jul"
+  },
+  {
+    "month": 5,
+    "monthName": "Aug"
+  },
+  {
+    "month": 6,
+    "monthName": "Sep"
+  },
+  {
+    "month": 7,
+    "monthName": "Oct",
+    "totalEMI": 0
+  },
+  {
+    "month": 8,
+    "monthName": "Nov",
+    "totalEMI": 0
+  },
+  {
+    "month": 9,
+    "monthName": "Dec",
+    "totalEMI": 0
+  },
+  {
+    "month": 10,
+    "monthName": "Jan",
+    "totalEMI": 0
+  },
+  {
+    "month": 11,
+    "monthName": "Feb",
+    "totalEMI": 0
+  },
+  {
+    "month": 12,
+    "monthName": "Mar",
+    "totalEMI": 0
+  }
+]

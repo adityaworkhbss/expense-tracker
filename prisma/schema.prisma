@@ -1,0 +1,393 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  output          = "../generated/prisma"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Users ───────────────────────────────────────────────────────────────────
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  timezone     String   @default("Asia/Kolkata")
+  currency     String   @default("INR")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  accounts              Account[]
+  categories            Category[]
+  transactions          Transaction[]
+  salaryRules           SalaryRule[]
+  budgets               Budget[]
+  recurringTransactions RecurringTransaction[]
+  aggregatesDaily       AggregateDaily[]
+  aggregatesMonthly     AggregateMonthly[]
+  auditLogs             AuditLog[]
+  refreshTokens         RefreshToken[]
+  creditCards           CreditCard[]
+  emis                  Emi[]
+
+  @@map("users")
+}
+
+// ─── Refresh Tokens ──────────────────────────────────────────────────────────
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  revoked   Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@map("refresh_tokens")
+}
+
+// ─── Accounts ────────────────────────────────────────────────────────────────
+
+enum AccountType {
+  PAY_NOW
+  PAY_LATER
+}
+
+model Account {
+  id             String      @id @default(uuid())
+  userId         String      @map("user_id")
+  name           String
+  type           AccountType @default(PAY_NOW)
+  openingBalance Decimal     @default(0) @map("opening_balance") @db.Decimal(15, 2)
+  currentBalance Decimal     @default(0) @map("current_balance") @db.Decimal(15, 2)
+  isActive       Boolean     @default(true) @map("is_active")
+  createdAt      DateTime    @default(now()) @map("created_at")
+  updatedAt      DateTime    @updatedAt @map("updated_at")
+
+  user                 User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions         Transaction[] @relation("AccountTransactions")
+  transferTransactions Transaction[] @relation("TransferToAccount")
+  creditCard           CreditCard?
+  emis                 Emi[]
+
+  @@index([userId])
+  @@map("accounts")
+}
+
+// ─── Categories ──────────────────────────────────────────────────────────────
+
+enum CategoryType {
+  INCOME
+  EXPENSE
+}
+
+model Category {
+  id        String       @id @default(uuid())
+  userId    String       @map("user_id")
+  name      String
+  type      CategoryType @default(EXPENSE)
+  parentId  String?      @map("parent_id")
+  color     String?
+  icon      String?
+  isActive  Boolean      @default(true) @map("is_active")
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent       Category?     @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children     Category[]    @relation("CategoryHierarchy")
+  transactions Transaction[]
+  budgets      Budget[]
+
+  @@index([userId])
+  @@index([parentId])
+  @@map("categories")
+}
+
+// ─── Transactions ────────────────────────────────────────────────────────────
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+  TRANSFER
+}
+
+enum TransactionStatus {
+  PENDING
+  CLEARED
+  REVERSED
+}
+
+model Transaction {
+  id                  String            @id @default(uuid())
+  userId              String            @map("user_id")
+  accountId           String            @map("account_id")
+  categoryId          String?           @map("category_id")
+  transferToAccountId String?           @map("transfer_to_account_id")
+  type                TransactionType
+  amount              Decimal           @db.Decimal(15, 2)
+  transactionDate     DateTime          @map("transaction_date") @db.Timestamptz()
+  note                String?
+  merchant            String?
+  paymentMethod       String?           @map("payment_method")
+  tags                Json?             @db.JsonB
+  status              TransactionStatus @default(CLEARED)
+  isSalary            Boolean           @default(false) @map("is_salary")
+  isDeleted           Boolean           @default(false) @map("is_deleted")
+  createdAt           DateTime          @default(now()) @map("created_at")
+  updatedAt           DateTime          @updatedAt @map("updated_at")
+
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  account           Account  @relation("AccountTransactions", fields: [accountId], references: [id])
+  category          Category? @relation(fields: [categoryId], references: [id])
+  transferToAccount Account? @relation("TransferToAccount", fields: [transferToAccountId], references: [id])
+  cardTransaction   CardTransaction?
+  emi               Emi?
+
+  @@index([userId])
+  @@index([transactionDate])
+  @@index([categoryId])
+  @@index([accountId])
+  @@index([type])
+  @@index([userId, transactionDate])
+  @@index([userId, type, transactionDate])
+  @@index([userId, isDeleted, transactionDate])
+  @@map("transactions")
+}
+
+// ─── Salary Rules ────────────────────────────────────────────────────────────
+
+model SalaryRule {
+  id             String   @id @default(uuid())
+  userId         String   @map("user_id")
+  salaryDay      Int      @default(10) @map("salary_day")
+  expectedAmount Decimal? @map("expected_amount") @db.Decimal(15, 2)
+  active         Boolean  @default(true)
+  cycleStartDay  Int      @default(10) @map("cycle_start_day")
+  timezone       String   @default("Asia/Kolkata")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("salary_rules")
+}
+
+// ─── Budgets ─────────────────────────────────────────────────────────────────
+
+enum BudgetPeriodType {
+  WEEKLY
+  MONTHLY
+  SALARY_CYCLE
+  CUSTOM
+}
+
+model Budget {
+  id          String           @id @default(uuid())
+  userId      String           @map("user_id")
+  categoryId  String?          @map("category_id")
+  periodType  BudgetPeriodType @map("period_type")
+  limitAmount Decimal          @map("limit_amount") @db.Decimal(15, 2)
+  startDate   DateTime         @map("start_date") @db.Date
+  endDate     DateTime?        @map("end_date") @db.Date
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category Category? @relation(fields: [categoryId], references: [id])
+
+  @@index([userId])
+  @@index([categoryId])
+  @@map("budgets")
+}
+
+// ─── Recurring Transactions ──────────────────────────────────────────────────
+
+enum RecurringFrequency {
+  DAILY
+  WEEKLY
+  MONTHLY
+  YEARLY
+  CUSTOM
+}
+
+model RecurringTransaction {
+  id         String             @id @default(uuid())
+  userId     String             @map("user_id")
+  accountId  String             @map("account_id")
+  categoryId String?            @map("category_id")
+  type       TransactionType
+  amount     Decimal            @db.Decimal(15, 2)
+  frequency  RecurringFrequency
+  nextRunAt  DateTime           @map("next_run_at") @db.Timestamptz()
+  endDate    DateTime?          @map("end_date") @db.Timestamptz()
+  active     Boolean            @default(true)
+  note       String?
+  createdAt  DateTime           @default(now()) @map("created_at")
+  updatedAt  DateTime           @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([nextRunAt])
+  @@map("recurring_transactions")
+}
+
+// ─── Credit Cards & Liabilities ──────────────────────────────────────────────
+
+model CreditCard {
+  id                 String   @id @default(uuid())
+  userId             String   @map("user_id")
+  accountId          String   @unique @map("account_id")
+  cardName           String   @map("card_name")
+  limit              Decimal  @db.Decimal(15, 2)
+  statementDate      Int      @map("statement_date")
+  dueDays            Int      @map("due_days")
+  currentOutstanding Decimal  @default(0) @map("current_outstanding") @db.Decimal(15, 2)
+  availableLimit     Decimal  @map("available_limit") @db.Decimal(15, 2)
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  user             User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  account          Account               @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  cardTransactions CardTransaction[]
+  statements       CreditCardStatement[]
+
+  @@index([userId])
+  @@map("credit_cards")
+}
+
+model CardTransaction {
+  id              String    @id @default(uuid())
+  creditCardId    String    @map("credit_card_id")
+  transactionId   String    @unique @map("transaction_id")
+  purchaseDate    DateTime  @map("purchase_date") @db.Timestamptz()
+  billedMonth     String?   @map("billed_month")
+  statementId     String?   @map("statement_id")
+  dueDate         DateTime? @map("due_date") @db.Date
+  settled         Boolean   @default(false)
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  creditCard  CreditCard           @relation(fields: [creditCardId], references: [id], onDelete: Cascade)
+  transaction Transaction          @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  statement   CreditCardStatement? @relation(fields: [statementId], references: [id])
+
+  @@index([creditCardId])
+  @@index([statementId])
+  @@map("card_transactions")
+}
+
+model CreditCardStatement {
+  id             String   @id @default(uuid())
+  creditCardId   String   @map("credit_card_id")
+  statementMonth String   @map("statement_month")
+  statementStart DateTime @map("statement_start") @db.Date
+  statementEnd   DateTime @map("statement_end") @db.Date
+  billedAmount   Decimal  @map("billed_amount") @db.Decimal(15, 2)
+  minimumDue     Decimal  @map("minimum_due") @db.Decimal(15, 2)
+  dueDate        DateTime @map("due_date") @db.Date
+  paidAmount     Decimal  @default(0) @map("paid_amount") @db.Decimal(15, 2)
+  isSettled      Boolean  @default(false) @map("is_settled")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  creditCard       CreditCard        @relation(fields: [creditCardId], references: [id], onDelete: Cascade)
+  cardTransactions CardTransaction[]
+
+  @@unique([creditCardId, statementMonth])
+  @@map("credit_card_statements")
+}
+
+model Emi {
+  id               String   @id @default(uuid())
+  userId           String   @map("user_id")
+  accountId        String   @map("account_id")
+  transactionId    String?  @unique @map("transaction_id")
+  name             String
+  principal        Decimal  @db.Decimal(15, 2)
+  tenure           Int
+  monthlyEmi       Decimal  @map("monthly_emi") @db.Decimal(15, 2)
+  startDate        DateTime @default(now()) @map("start_date") @db.Date
+  nextDueDate      DateTime @map("next_due_date") @db.Date
+  remainingBalance Decimal  @map("remaining_balance") @db.Decimal(15, 2)
+  monthsPaid       Int      @default(0) @map("months_paid")
+  active           Boolean  @default(true)
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  account     Account      @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  transaction Transaction? @relation(fields: [transactionId], references: [id])
+
+  @@index([userId])
+  @@index([nextDueDate])
+  @@map("emis")
+}
+
+// ─── Aggregate Tables ────────────────────────────────────────────────────────
+
+model AggregateDaily {
+  id               String   @id @default(uuid())
+  userId           String   @map("user_id")
+  date             DateTime @db.Date
+  incomeTotal      Decimal  @default(0) @map("income_total") @db.Decimal(15, 2)
+  expenseTotal     Decimal  @default(0) @map("expense_total") @db.Decimal(15, 2)
+  netTotal         Decimal  @default(0) @map("net_total") @db.Decimal(15, 2)
+  transactionCount Int      @default(0) @map("transaction_count")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId, date])
+  @@map("aggregates_daily")
+}
+
+model AggregateMonthly {
+  id               String   @id @default(uuid())
+  userId           String   @map("user_id")
+  monthKey         String   @map("month_key") // Format: YYYY-MM
+  incomeTotal      Decimal  @default(0) @map("income_total") @db.Decimal(15, 2)
+  expenseTotal     Decimal  @default(0) @map("expense_total") @db.Decimal(15, 2)
+  netTotal         Decimal  @default(0) @map("net_total") @db.Decimal(15, 2)
+  transactionCount Int      @default(0) @map("transaction_count")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, monthKey])
+  @@index([userId, monthKey])
+  @@map("aggregates_monthly")
+}
+
+// ─── Audit Logs ──────────────────────────────────────────────────────────────
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String   @map("user_id")
+  action     String   // CREATE, UPDATE, DELETE
+  entityType String   @map("entity_type")
+  entityId   String   @map("entity_id")
+  beforeData Json?    @map("before_data") @db.JsonB
+  afterData  Json?    @map("after_data") @db.JsonB
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
