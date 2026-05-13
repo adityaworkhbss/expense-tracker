@@ -1,6 +1,5 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
-import { CreditCard, Tags, PieChart, Download, Settings, User, LogOut, ChevronRight, Bell } from 'lucide-react';
+import { CreditCard, Tags, PieChart, Download, Settings, LogOut, ChevronRight, Bell } from 'lucide-react';
 
 const More = () => {
   const MENU_ITEMS = [

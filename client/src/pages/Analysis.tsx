@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
-  AreaChart, Area, PieChart, Pie, Cell, Legend, ComposedChart
+  Area, PieChart, Pie, Cell, ComposedChart
 } from 'recharts';
 import { 
-  TrendingUp, TrendingDown, Target, Wallet, Calendar, 
-  ChevronRight, ArrowLeft, Filter, Download, Zap, AlertCircle
+  TrendingDown, Target, Wallet, 
+  ArrowLeft, Zap, AlertCircle, BarChart as BarChartIcon
 } from 'lucide-react';
 import { analyticsApi } from '../services/api';
 
@@ -218,7 +217,7 @@ const Analysis = () => {
         <div className="card" style={{ padding: '1rem' }}>
           <div className="flex-between mb-3">
             <span className="text-[10px] font-bold text-secondary uppercase tracking-wider">Net Worth</span>
-            <BarChart size={14} className="text-accent-primary" />
+            <BarChartIcon size={14} className="text-accent-primary" />
           </div>
           <h2 className="text-xl font-bold">{formatCurrency(data.netWorth)}</h2>
           <p className="text-[10px] text-secondary mt-2">Assets minus all obligations</p>
@@ -278,7 +277,7 @@ const Analysis = () => {
                     nameKey="name"
                     stroke="none"
                   >
-                    {catData.map((entry, index) => (
+                    {catData.map((_, index) => (
                       <Cell 
                         key={`cell-${index}`} 
                         fill={COLORS[index % COLORS.length]} 

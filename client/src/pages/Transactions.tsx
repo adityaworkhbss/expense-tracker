@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Filter, Search, ArrowUpRight, ArrowDownLeft, Plus, X, AlertCircle, Check } from 'lucide-react';
+import { ArrowUpRight, ArrowDownLeft, Plus, X, AlertCircle, Check } from 'lucide-react';
 import { transactionsApi, accountsApi, categoriesApi } from '../services/api';
 
 const Transactions = () => {

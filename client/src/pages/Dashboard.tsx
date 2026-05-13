@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { 
-  ArrowUpRight, ArrowDownRight, RefreshCw, CreditCard, PieChart, 
-  TrendingUp, TrendingDown, Wallet, Calendar, AlertCircle, CheckCircle2,
-  ChevronRight, Zap
+  ArrowUpRight, RefreshCw, CreditCard, PieChart, 
+  TrendingUp, TrendingDown, Wallet, Calendar, AlertCircle, CheckCircle2
 } from 'lucide-react';
 import { analyticsApi } from '../services/api';
 

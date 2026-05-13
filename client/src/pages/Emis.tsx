@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Activity, Plus, Settings, Trash2, X, AlertCircle, Check } from 'lucide-react';
 import { emisApi, recurringApi, accountsApi, categoriesApi } from '../services/api';
 
@@ -167,23 +167,7 @@ const Emis = () => {
     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount);
   };
 
-  const calculateProgress = (remaining: number, principal: number) => {
-    if (!principal || principal === 0) return 0;
-    return Math.max(0, Math.min(100, ((principal - remaining) / principal) * 100));
-  };
 
-  const getMonthsPaid = (startDate: string) => {
-    if (!startDate) return 0;
-    const start = new Date(startDate);
-    const now = new Date();
-    let months = (now.getFullYear() - start.getFullYear()) * 12;
-    months += now.getMonth() - start.getMonth();
-    // If we haven't reached the exact day of the month yet, subtract 1
-    if (now.getDate() < start.getDate()) {
-      months--;
-    }
-    return Math.max(0, months);
-  };
 
   return (
     <div className="page-container animate-fade-in">

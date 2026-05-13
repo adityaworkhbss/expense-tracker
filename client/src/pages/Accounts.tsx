@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { ChevronLeft, Plus, Trash2, CreditCard, Landmark, Wallet, Smartphone, AlertCircle, Check } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ChevronLeft, Plus, Trash2, CreditCard, Landmark, Wallet, AlertCircle, Check } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { accountsApi } from '../services/api';
 
