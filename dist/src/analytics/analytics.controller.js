@@ -25,8 +25,8 @@ let AnalyticsController = class AnalyticsController {
     getExcelDashboard(userId) {
         return this.analyticsService.getExcelDashboard(userId);
     }
-    getSummary(userId) {
-        return this.analyticsService.getSummary(userId);
+    getSummary(userId, from, to) {
+        return this.analyticsService.getSummary(userId, from, to);
     }
     getDaily(userId, from, to) {
         return this.analyticsService.getDaily(userId, from, to);
@@ -61,10 +61,14 @@ __decorate([
 ], AnalyticsController.prototype, "getExcelDashboard", null);
 __decorate([
     (0, common_1.Get)('summary'),
-    (0, swagger_1.ApiOperation)({ summary: 'Get overall summary: today, week, month, salary-cycle totals' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Get overall summary with optional custom range' }),
+    (0, swagger_1.ApiQuery)({ name: 'from', required: false }),
+    (0, swagger_1.ApiQuery)({ name: 'to', required: false }),
     __param(0, (0, common_2.CurrentUser)('id')),
+    __param(1, (0, common_1.Query)('from')),
+    __param(2, (0, common_1.Query)('to')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, String, String]),
     __metadata("design:returntype", void 0)
 ], AnalyticsController.prototype, "getSummary", null);
 __decorate([

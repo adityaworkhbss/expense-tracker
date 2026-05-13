@@ -16,21 +16,36 @@ const Analysis = () => {
   const [data, setData] = useState<any>(null);
   const [catData, setCatData] = useState<any[]>([]);
   const [cashflow, setCashflow] = useState<any[]>([]);
+  const [timeframe, setTimeframe] = useState('MONTH'); // 'WEEK', 'MONTH', 'YEAR'
   
   useEffect(() => {
     fetchAllData();
-  }, []);
+  }, [timeframe]);
 
   const fetchAllData = async () => {
+    setLoading(true);
     try {
       const today = new Date();
-      const monthStart = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
-      const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
+      let start, end;
+
+      if (timeframe === 'WEEK') {
+        const lastWeek = new Date(today);
+        lastWeek.setDate(today.getDate() - 7);
+        start = lastWeek.toISOString().split('T')[0];
+        end = today.toISOString().split('T')[0];
+      } else if (timeframe === 'YEAR') {
+        start = new Date(today.getFullYear(), 0, 1).toISOString().split('T')[0];
+        end = new Date(today.getFullYear(), 11, 31).toISOString().split('T')[0];
+      } else {
+        // MONTH
+        start = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+        end = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
+      }
 
       const [summary, categories, timeline] = await Promise.all([
-        analyticsApi.getSummary(),
-        analyticsApi.getCategoryWise(monthStart, monthEnd),
-        analyticsApi.getCashflow(monthStart, monthEnd)
+        analyticsApi.getSummary(start, end),
+        analyticsApi.getCategoryWise(start, end),
+        analyticsApi.getCashflow(start, end)
       ]);
 
       setData(summary);
@@ -85,7 +100,7 @@ const Analysis = () => {
       </div>
       <div className="text-center">
         <h2 className="text-xl font-bold mb-1">Synthesizing Report</h2>
-        <p className="text-secondary text-sm">Aggregating multiple data streams...</p>
+        <p className="text-secondary text-sm">Aggregating {timeframe.toLowerCase()}ly data...</p>
       </div>
     </div>
   );
@@ -95,9 +110,12 @@ const Analysis = () => {
       <AlertCircle size={48} className="text-secondary mb-4" />
       <h2 className="text-xl font-bold">Incomplete Intelligence</h2>
       <p className="text-secondary text-sm mt-1 max-w-[300px] text-center">
-        We need a bit more transaction history for this month to generate a deep-dive report.
+        We need a bit more transaction history for this period to generate a deep-dive report.
       </p>
-      <button className="btn-primary mt-6" onClick={() => window.location.href='/dashboard'}>Return Home</button>
+      <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
+        <button className="btn-secondary" onClick={() => setTimeframe('YEAR')}>Try Yearly</button>
+        <button className="btn-primary" onClick={() => window.location.href='/dashboard'}>Return Home</button>
+      </div>
     </div>
   );
 
@@ -120,21 +138,41 @@ const Analysis = () => {
           >
             <ArrowLeft size={14} /> Dashboard
           </button>
-          <div style={{ display: 'flex', gap: '0.75rem' }}>
-            <button className="flex-center gap-2" style={{ 
-              background: 'var(--bg-tertiary)', border: '1px solid var(--surface-border)', 
-              padding: '0.4rem 0.8rem', borderRadius: 'var(--radius-md)', fontSize: '0.75rem', fontWeight: 600
-            }}>
-              <Filter size={14} /> Filter
-            </button>
-            <button className="flex-center gap-2 btn-primary" style={{ padding: '0.4rem 0.8rem', fontSize: '0.75rem' }}>
-              <Download size={14} /> Export
-            </button>
+          
+          {/* TIMEFRAME TOGGLE */}
+          <div className="glass-panel" style={{ 
+            display: 'flex', 
+            gap: '0.25rem', 
+            padding: '0.25rem', 
+            borderRadius: '12px',
+            border: '1px solid var(--surface-border)'
+          }}>
+            {['WEEK', 'MONTH', 'YEAR'].map(tf => (
+              <button
+                key={tf}
+                onClick={() => setTimeframe(tf)}
+                style={{
+                  padding: '0.4rem 0.75rem',
+                  borderRadius: '8px',
+                  border: 'none',
+                  fontSize: '0.65rem',
+                  fontWeight: 800,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  cursor: 'pointer',
+                  background: timeframe === tf ? 'var(--accent-primary)' : 'transparent',
+                  color: timeframe === tf ? '#fff' : 'var(--text-secondary)',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                {tf}
+              </button>
+            ))}
           </div>
         </div>
         
-        <h1 className="text-3xl font-bold text-gradient">Financial Analysis</h1>
-        <p className="text-secondary text-sm">Comprehensive performance report for this cycle</p>
+        <h1 className="text-3xl font-bold text-gradient">{timeframe.charAt(0) + timeframe.slice(1).toLowerCase()}ly Analysis</h1>
+        <p className="text-secondary text-sm">Deep-dive performance report for this {timeframe.toLowerCase()} cycle</p>
       </header>
 
       <style>{`

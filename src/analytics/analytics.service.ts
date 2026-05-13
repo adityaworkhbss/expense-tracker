@@ -21,20 +21,22 @@ export class AnalyticsService {
   }
 
   /** Summary: today, week, month, salary-cycle totals and cashflow/net-worth */
-  async getSummary(userId: string) {
+  async getSummary(userId: string, from?: string, to?: string) {
     const today = getTodayRange();
     const week = getThisWeekRange();
     const month = getThisMonthRange();
     const salaryRule = await this.prisma.salaryRule.findFirst({ where: { userId, active: true } });
     const cycle = getSalaryCycleDates(new Date(), salaryRule?.cycleStartDay ?? 10);
 
-    const [dailyExp, weeklyExp, monthlyExp, monthlyInc, cycleExp, cycleInc] = await Promise.all([
+    const [dailyExp, weeklyExp, monthlyExp, monthlyInc, cycleExp, cycleInc, customExp, customInc] = await Promise.all([
       this.sumAmount(userId, 'EXPENSE', today.start, today.end),
       this.sumAmount(userId, 'EXPENSE', week.start, week.end),
       this.sumAmount(userId, 'EXPENSE', month.start, month.end),
       this.sumAmount(userId, 'INCOME', month.start, month.end),
       this.sumAmount(userId, 'EXPENSE', cycle.start, cycle.end),
       this.sumAmount(userId, 'INCOME', cycle.start, cycle.end),
+      from && to ? this.sumAmount(userId, 'EXPENSE', new Date(from), new Date(to)) : Promise.resolve(0),
+      from && to ? this.sumAmount(userId, 'INCOME', new Date(from), new Date(to)) : Promise.resolve(0),
     ]);
 
     const accounts = await this.prisma.account.findMany({
@@ -89,6 +91,8 @@ export class AnalyticsService {
       weeklyExpense: weeklyExp,
       monthlyExpense: monthlyExp,
       monthlyIncome: monthlyInc,
+      customExpense: customExp,
+      customIncome: customInc,
       salaryCycleExpense: cycleExp,
       salaryCycleIncome: cycleInc,
       salaryCycleNet: cycleInc - cycleExp,
@@ -102,7 +106,7 @@ export class AnalyticsService {
         total: upcomingCcBills + upcomingEmis + upcomingPayLater,
       },
       projectedFreeCash,
-      safeSpendingLimit: projectedFreeCash > 0 ? projectedFreeCash : 0,
+      safeSpendingLimit: Math.max(0, projectedFreeCash * 0.8), // 80% of free cash is safe
       salaryCycleDates: { start: cycle.start, end: cycle.end },
     };
   }

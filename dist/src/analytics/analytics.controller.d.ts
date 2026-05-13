@@ -52,6 +52,8 @@ export declare class AnalyticsController {
             weeklyExpense: number;
             monthlyExpense: number;
             monthlyIncome: number;
+            customExpense: number;
+            customIncome: number;
             salaryCycleExpense: number;
             salaryCycleIncome: number;
             salaryCycleNet: number;
@@ -72,11 +74,13 @@ export declare class AnalyticsController {
             };
         };
     }>;
-    getSummary(userId: string): Promise<{
+    getSummary(userId: string, from?: string, to?: string): Promise<{
         dailyExpense: number;
         weeklyExpense: number;
         monthlyExpense: number;
         monthlyIncome: number;
+        customExpense: number;
+        customIncome: number;
         salaryCycleExpense: number;
         salaryCycleIncome: number;
         salaryCycleNet: number;

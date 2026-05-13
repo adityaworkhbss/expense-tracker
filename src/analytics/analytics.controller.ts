@@ -16,9 +16,15 @@ export class AnalyticsController {
   }
 
   @Get('summary')
-  @ApiOperation({ summary: 'Get overall summary: today, week, month, salary-cycle totals' })
-  getSummary(@CurrentUser('id') userId: string) {
-    return this.analyticsService.getSummary(userId);
+  @ApiOperation({ summary: 'Get overall summary with optional custom range' })
+  @ApiQuery({ name: 'from', required: false })
+  @ApiQuery({ name: 'to', required: false })
+  getSummary(
+    @CurrentUser('id') userId: string, 
+    @Query('from') from?: string, 
+    @Query('to') to?: string
+  ) {
+    return this.analyticsService.getSummary(userId, from, to);
   }
 
   @Get('daily')

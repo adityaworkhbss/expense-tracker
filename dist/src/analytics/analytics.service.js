@@ -21,19 +21,21 @@ let AnalyticsService = class AnalyticsService {
     baseWhere(userId) {
         return { userId, isDeleted: false, status: 'CLEARED' };
     }
-    async getSummary(userId) {
+    async getSummary(userId, from, to) {
         const today = (0, common_2.getTodayRange)();
         const week = (0, common_2.getThisWeekRange)();
         const month = (0, common_2.getThisMonthRange)();
         const salaryRule = await this.prisma.salaryRule.findFirst({ where: { userId, active: true } });
         const cycle = (0, common_2.getSalaryCycleDates)(new Date(), salaryRule?.cycleStartDay ?? 10);
-        const [dailyExp, weeklyExp, monthlyExp, monthlyInc, cycleExp, cycleInc] = await Promise.all([
+        const [dailyExp, weeklyExp, monthlyExp, monthlyInc, cycleExp, cycleInc, customExp, customInc] = await Promise.all([
             this.sumAmount(userId, 'EXPENSE', today.start, today.end),
             this.sumAmount(userId, 'EXPENSE', week.start, week.end),
             this.sumAmount(userId, 'EXPENSE', month.start, month.end),
             this.sumAmount(userId, 'INCOME', month.start, month.end),
             this.sumAmount(userId, 'EXPENSE', cycle.start, cycle.end),
             this.sumAmount(userId, 'INCOME', cycle.start, cycle.end),
+            from && to ? this.sumAmount(userId, 'EXPENSE', new Date(from), new Date(to)) : Promise.resolve(0),
+            from && to ? this.sumAmount(userId, 'INCOME', new Date(from), new Date(to)) : Promise.resolve(0),
         ]);
         const accounts = await this.prisma.account.findMany({
             where: { userId, isActive: true },
@@ -72,6 +74,8 @@ let AnalyticsService = class AnalyticsService {
             weeklyExpense: weeklyExp,
             monthlyExpense: monthlyExp,
             monthlyIncome: monthlyInc,
+            customExpense: customExp,
+            customIncome: customInc,
             salaryCycleExpense: cycleExp,
             salaryCycleIncome: cycleInc,
             salaryCycleNet: cycleInc - cycleExp,
@@ -85,7 +89,7 @@ let AnalyticsService = class AnalyticsService {
                 total: upcomingCcBills + upcomingEmis + upcomingPayLater,
             },
             projectedFreeCash,
-            safeSpendingLimit: projectedFreeCash > 0 ? projectedFreeCash : 0,
+            safeSpendingLimit: Math.max(0, projectedFreeCash * 0.8),
             salaryCycleDates: { start: cycle.start, end: cycle.end },
         };
     }

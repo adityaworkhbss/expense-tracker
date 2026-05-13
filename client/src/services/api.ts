@@ -13,7 +13,7 @@ const api = axios.create({
 
 export const analyticsApi = {
   getExcelDashboard: () => api.get('/analytics/excel-dashboard').then(res => res.data),
-  getSummary: () => api.get('/analytics/summary').then(res => res.data),
+  getSummary: (from?: string, to?: string) => api.get('/analytics/summary', { params: { from, to } }).then(res => res.data),
   getDaily: (from: string, to: string) => api.get('/analytics/daily', { params: { from, to } }).then(res => res.data),
   getCurrentSalaryCycle: () => api.get('/analytics/salary-cycle/current').then(res => res.data),
   getCategoryWise: (from: string, to: string) => api.get('/analytics/category-wise', { params: { from, to } }).then(res => res.data),
