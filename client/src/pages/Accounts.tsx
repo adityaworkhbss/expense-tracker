@@ -224,7 +224,7 @@ const Accounts = () => {
         </div>
       ) : (
         <div className="card" style={{ padding: '0', overflow: 'hidden' }}>
-          {accounts.map((acc, i) => (
+          {accounts.map((acc: any, i: number) => (
             <div
               key={acc.id}
               className="flex-between animate-slide-up"

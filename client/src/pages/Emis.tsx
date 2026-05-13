@@ -407,7 +407,7 @@ const Emis = () => {
               <Activity size={32} style={{ color: 'var(--text-muted)', marginBottom: '0.5rem', margin: '0 auto' }} />
               <p className="text-secondary text-sm">No active EMIs</p>
             </div>
-          ) : emis.map((emi, i) => {
+          ) : emis.map((emi: any, i: number) => {
             const paidAmount = Number(emi.principal) - Number(emi.remainingBalance);
             const progress = (emi.monthsPaid / emi.tenure) * 100;
 
@@ -483,7 +483,7 @@ const Emis = () => {
           </div>
         ) : (
           <div className="card" style={{ padding: '0', overflow: 'hidden' }}>
-            {subscriptions.map((sub, i) => (
+            {subscriptions.map((sub: any, i: number) => (
               <div key={sub.id} className="flex-between animate-slide-up" style={{
                 padding: '1rem 1.25rem',
                 borderBottom: i !== subscriptions.length - 1 ? '1px solid var(--surface-border)' : 'none',

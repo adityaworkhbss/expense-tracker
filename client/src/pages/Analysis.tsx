@@ -1,5 +1,6 @@
+import { useState, useEffect } from 'react';
 import { 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
+  Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
   Area, PieChart, Pie, Cell, ComposedChart
 } from 'recharts';
 import { 
@@ -277,7 +278,7 @@ const Analysis = () => {
                     nameKey="name"
                     stroke="none"
                   >
-                    {catData.map((_, index) => (
+                    {catData.map((_: any, index: number) => (
                       <Cell 
                         key={`cell-${index}`} 
                         fill={COLORS[index % COLORS.length]} 
@@ -290,7 +291,7 @@ const Analysis = () => {
               </ResponsiveContainer>
             </div>
             <div style={{ width: '100%', flex: 1 }}>
-              {catData.slice(0, 5).map((item, i) => (
+              {catData.slice(0, 5).map((item: any, i: number) => (
                 <div key={i} className="flex-between mb-3">
                   <div className="flex-center gap-2 overflow-hidden">
                     <div style={{ minWidth: '8px', height: '8px', borderRadius: '2px', background: COLORS[i % COLORS.length] }} />

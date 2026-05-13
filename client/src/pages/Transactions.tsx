@@ -298,7 +298,7 @@ const Transactions = () => {
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          {transactions.map((t, i) => {
+          {transactions.map((t: any, i: number) => {
             const showDateHeader = i === 0 || formatDate(transactions[i-1].transactionDate) !== formatDate(t.transactionDate);
             
             return (
