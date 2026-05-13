@@ -137,55 +137,72 @@ const Analysis = () => {
         <p className="text-secondary text-sm">Comprehensive performance report for this cycle</p>
       </header>
 
+      <style>{`
+        .analysis-grid { display: grid; gap: 1rem; grid-template-columns: 1fr; margin-bottom: 1.5rem; }
+        .chart-grid { display: grid; gap: 1.5rem; grid-template-columns: 1fr; margin-bottom: 2rem; }
+        .split-grid { display: grid; gap: 1.5rem; grid-template-columns: 1fr; }
+        .pie-container { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
+        
+        @media (min-width: 768px) {
+          .analysis-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 1.25rem !important; }
+          @media (min-width: 1024px) {
+            .analysis-grid { grid-template-columns: repeat(4, 1fr) !important; }
+          }
+          .chart-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .split-grid { grid-template-columns: 1.5fr 1fr !important; gap: 3rem !important; }
+          .pie-container { flex-direction: row !important; }
+        }
+      `}</style>
+
       {/* CORE PERFORMANCE CARDS */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem', marginBottom: '2.5rem' }}>
-        <div className="card" style={{ padding: '1.25rem' }}>
+      <div className="analysis-grid">
+        <div className="card" style={{ padding: '1rem' }}>
           <div className="flex-between mb-3">
             <span className="text-[10px] font-bold text-secondary uppercase tracking-wider">Cash Position</span>
             <Wallet size={14} className="text-success" />
           </div>
-          <h2 className="text-2xl font-bold">{formatCurrency(data.cashflowBalance)}</h2>
+          <h2 className="text-xl font-bold">{formatCurrency(data.cashflowBalance)}</h2>
           <p className="text-[10px] text-secondary mt-2">Available liquid assets</p>
         </div>
 
-        <div className="card" style={{ padding: '1.25rem' }}>
+        <div className="card" style={{ padding: '1rem' }}>
           <div className="flex-between mb-3">
             <span className="text-[10px] font-bold text-secondary uppercase tracking-wider">Liabilities</span>
             <AlertCircle size={14} className="text-danger" />
           </div>
-          <h2 className="text-2xl font-bold text-danger">{formatCurrency(data.totalLiabilities)}</h2>
+          <h2 className="text-xl font-bold text-danger">{formatCurrency(data.totalLiabilities)}</h2>
           <div className="flex-between mt-2 text-[9px] text-secondary font-bold">
             <span>CC: {formatCurrency(data.futureObligations.ccBills)}</span>
             <span>EMI: {formatCurrency(data.futureObligations.emis)}</span>
           </div>
         </div>
 
-        <div className="card" style={{ padding: '1.25rem' }}>
+        <div className="card" style={{ padding: '1rem' }}>
           <div className="flex-between mb-3">
             <span className="text-[10px] font-bold text-secondary uppercase tracking-wider">Net Worth</span>
             <BarChart size={14} className="text-accent-primary" />
           </div>
-          <h2 className="text-2xl font-bold">{formatCurrency(data.netWorth)}</h2>
+          <h2 className="text-xl font-bold">{formatCurrency(data.netWorth)}</h2>
           <p className="text-[10px] text-secondary mt-2">Assets minus all obligations</p>
         </div>
 
-        <div className="card" style={{ padding: '1.25rem', border: '1px solid var(--accent-primary)', background: 'rgba(99, 102, 241, 0.03)' }}>
+        <div className="card" style={{ padding: '1rem', border: '1px solid var(--accent-primary)', background: 'rgba(99, 102, 241, 0.03)' }}>
           <div className="flex-between mb-3">
             <span className="text-[10px] font-bold text-accent-primary uppercase tracking-wider">Spending Limit</span>
             <Target size={14} className="text-accent-primary" />
           </div>
-          <h2 className="text-2xl font-bold">{formatCurrency(data.safeSpendingLimit)}</h2>
+          <h2 className="text-xl font-bold">{formatCurrency(data.safeSpendingLimit)}</h2>
           <p className="text-[10px] text-secondary mt-2">Safe variable spending buffer</p>
         </div>
       </div>
 
       {/* CHARTS SECTION */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(450px, 1fr))', gap: '2rem', marginBottom: '2.5rem' }}>
+      <div className="chart-grid">
         
         {/* CASHFLOW TREND */}
-        <div className="card" style={{ padding: '1.5rem', minHeight: '400px' }}>
-          <h3 className="font-bold text-lg mb-6 flex-center gap-2"><TrendingDown size={18} /> Balance & Spending Analysis</h3>
-          <div style={{ width: '100%', height: '300px' }}>
+        <div className="card" style={{ padding: '1rem', minHeight: '350px' }}>
+          <h3 className="font-bold text-base mb-6 flex-center gap-2"><TrendingDown size={18} /> Balance & Trends</h3>
+          <div style={{ width: '100%', height: '250px' }}>
             <ResponsiveContainer>
               <ComposedChart data={cashflow}>
                 <defs>
@@ -203,25 +220,21 @@ const Analysis = () => {
               </ComposedChart>
             </ResponsiveContainer>
           </div>
-          <div className="flex-center gap-6 mt-4">
-            <div className="flex-center gap-2"><div style={{ width: 10, height: 10, background: 'var(--accent-primary)', borderRadius: '50%' }} /> <span className="text-xs text-secondary">Available Balance (Curve)</span></div>
-            <div className="flex-center gap-2"><div style={{ width: 10, height: 10, background: '#ef4444', borderRadius: '2px' }} /> <span className="text-xs text-secondary">Daily Spending Bars</span></div>
-          </div>
         </div>
 
         {/* CATEGORY BREAKDOWN */}
-        <div className="card" style={{ padding: '1.5rem', minHeight: '400px' }}>
-          <h3 className="font-bold text-lg mb-6 flex-center gap-2"><Target size={18} /> Spending Distribution</h3>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <div style={{ width: '50%', height: '300px' }}>
+        <div className="card" style={{ padding: '1.5rem', minHeight: '350px' }}>
+          <h3 className="font-bold text-base mb-6 flex-center gap-2"><Target size={18} /> Distribution</h3>
+          <div className="pie-container">
+            <div style={{ width: '100%', maxWidth: '200px', height: '200px' }}>
               <ResponsiveContainer>
                 <PieChart>
                   <Pie
                     data={catData}
                     cx="50%"
                     cy="50%"
-                    innerRadius={60}
-                    outerRadius={100}
+                    innerRadius={50}
+                    outerRadius={80}
                     paddingAngle={5}
                     dataKey="total"
                     nameKey="name"
@@ -239,14 +252,14 @@ const Analysis = () => {
                 </PieChart>
               </ResponsiveContainer>
             </div>
-            <div style={{ width: '50%', paddingLeft: '1rem' }}>
+            <div style={{ width: '100%', flex: 1 }}>
               {catData.slice(0, 5).map((item, i) => (
                 <div key={i} className="flex-between mb-3">
                   <div className="flex-center gap-2 overflow-hidden">
                     <div style={{ minWidth: '8px', height: '8px', borderRadius: '2px', background: COLORS[i % COLORS.length] }} />
-                    <span className="text-xs text-secondary truncate">{item.category.name}</span>
+                    <span className="text-[10px] text-secondary truncate">{item.category.name}</span>
                   </div>
-                  <span className="text-xs font-bold">{formatCurrency(item.total)}</span>
+                  <span className="text-[10px] font-bold">{formatCurrency(item.total)}</span>
                 </div>
               ))}
             </div>
@@ -255,25 +268,25 @@ const Analysis = () => {
       </div>
 
       {/* LIABILITIES DEEP DIVE */}
-      <div className="card" style={{ padding: '1.5rem' }}>
-        <h3 className="font-bold text-lg mb-6">Liability Structure</h3>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem' }}>
+      <div className="card" style={{ padding: '1.25rem' }}>
+        <h3 className="font-bold text-base mb-6">Liability Structure</h3>
+        <div className="split-grid">
           <div>
-             <p className="text-sm text-secondary mb-4">Your current liabilities are composed of Credit Card bills and EMIs. The chart below shows the weight of each category against your liquid cash.</p>
-             <div className="space-y-4">
+             <p className="text-[11px] text-secondary mb-4 leading-relaxed">Composition of Credit Card bills and EMIs weighted against your current liquid cash position.</p>
+             <div className="space-y-5">
                 <div>
-                   <div className="flex-between text-xs mb-1">
+                   <div className="flex-between text-[10px] mb-1.5 font-bold uppercase tracking-wider">
                       <span>Liquid Cash</span>
-                      <span>{formatPercent((data.cashflowBalance / (data.cashflowBalance + data.totalLiabilities)) * 100)}</span>
+                      <span className="text-success">{formatPercent((data.cashflowBalance / (data.cashflowBalance + data.totalLiabilities)) * 100)}</span>
                    </div>
                    <div className="h-2 w-full bg-surface-border rounded-full overflow-hidden">
                       <div style={{ width: `${(data.cashflowBalance / (data.cashflowBalance + data.totalLiabilities)) * 100}%`, height: '100%', background: 'var(--success)' }} />
                    </div>
                 </div>
                 <div>
-                   <div className="flex-between text-xs mb-1">
+                   <div className="flex-between text-[10px] mb-1.5 font-bold uppercase tracking-wider">
                       <span>Debt & Obligations</span>
-                      <span>{formatPercent((data.totalLiabilities / (data.cashflowBalance + data.totalLiabilities)) * 100)}</span>
+                      <span className="text-danger">{formatPercent((data.totalLiabilities / (data.cashflowBalance + data.totalLiabilities)) * 100)}</span>
                    </div>
                    <div className="h-2 w-full bg-surface-border rounded-full overflow-hidden">
                       <div style={{ width: `${(data.totalLiabilities / (data.cashflowBalance + data.totalLiabilities)) * 100}%`, height: '100%', background: 'var(--danger)' }} />
@@ -281,11 +294,11 @@ const Analysis = () => {
                 </div>
              </div>
           </div>
-          <div className="flex-center" style={{ flexDirection: 'column', gap: '1rem', borderLeft: '1px solid var(--surface-border)', paddingLeft: '3rem' }}>
+          <div className="flex-center" style={{ flexDirection: 'column', gap: '0.5rem', padding: '1.5rem 0' }}>
              <div className="text-center">
-                <span className="text-xs text-secondary uppercase font-bold">Projected Free Cash</span>
-                <h4 className="text-3xl font-bold mt-1 text-accent-primary">{formatCurrency(data.projectedFreeCash)}</h4>
-                <p className="text-[10px] text-secondary mt-2 max-w-[200px]">This is the money left after all bills, EMIs, and liabilities are cleared.</p>
+                <span className="text-[9px] text-secondary uppercase font-black tracking-widest">Projected Free Cash</span>
+                <h4 className="text-3xl font-black mt-1 text-accent-primary tracking-tight">{formatCurrency(data.projectedFreeCash)}</h4>
+                <p className="text-[9px] text-secondary mt-3 opacity-60">Surplus after clearing all current obligations.</p>
              </div>
           </div>
         </div>

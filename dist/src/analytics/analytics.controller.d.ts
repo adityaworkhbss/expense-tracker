@@ -17,10 +17,11 @@ export declare class AnalyticsController {
         currentMonth: {
             income: number;
             fixedExpenses: number;
+            expectedFixed: any;
             variableExpenses: number;
             ccExpensesCurrent: number;
             ccPaymentPrev: number;
-            totalExpenses: number;
+            totalExpenses: any;
             netBalance: number;
         };
         nextMonth: {
@@ -30,8 +31,14 @@ export declare class AnalyticsController {
             estTotalExpenses: any;
             estBalance: number;
         };
+        projections: {
+            month: string;
+            fixedObligations: any;
+            savingsGained: number;
+        }[];
         insights: {
             fixedVsVariable: number;
+            emiTotal: any;
             emiPercentOfIncome: number;
             ccVsBankSpending: number;
         };

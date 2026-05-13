@@ -94,35 +94,64 @@ const Dashboard = () => {
           <StatusBadge savingsRate={data.ytd.savingsRate} />
         </div>
       </header>
+      <style>{`
+        .dashboard-grid { display: grid; gap: 1rem; grid-template-columns: 1fr; margin-bottom: 1.5rem; }
+        .hero-grid { display: grid; gap: 0.75rem; grid-template-columns: repeat(2, 1fr); margin-bottom: 1.5rem; }
+        .ratios-grid { display: grid; gap: 1.5rem; grid-template-columns: 1fr; margin-bottom: 2rem; }
+        
+        @media (min-width: 768px) {
+          .dashboard-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 1.5rem !important; }
+          .hero-grid { grid-template-columns: repeat(4, 1fr) !important; gap: 1rem !important; }
+          .ratios-grid { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+      `}</style>
 
       {/* MONTHLY COMPARISON SECTION - NOW FIRST */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
+      <div className="dashboard-grid">
         
         {/* CURRENT MONTH CARD */}
         <div className="card" style={{ padding: '0', overflow: 'hidden', background: 'rgba(255,255,255,0.02)' }}>
           <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid var(--surface-border)' }}>
             <div className="flex-between">
               <span className="font-bold flex-center text-sm" style={{ gap: '0.5rem' }}><Calendar size={14} /> Current: {data.currentMonthString}</span>
-              <span className={`text-[10px] font-bold ${data.currentMonth.netBalance >= 0 ? 'text-success' : 'text-danger'}`}>
-                {data.currentMonth.netBalance >= 0 ? 'SURPLUS' : 'DEFICIT'}
+              <span className={`text-[10px] font-black uppercase px-1.5 py-0.5 rounded ${data.currentMonth.netBalance >= 0 ? 'bg-success text-white' : 'bg-danger text-white'}`}>
+                {data.currentMonth.netBalance >= 0 ? 'Surplus' : 'Deficit'}
               </span>
             </div>
           </div>
           <div style={{ padding: '1rem' }}>
             <div className="flex-between mb-2">
-              <span className="text-secondary text-xs">Realized Income</span>
-              <span className="font-semibold text-sm">{formatCurrency(data.currentMonth.income)}</span>
+              <span className="text-secondary text-xs">Fixed Income (+)</span>
+              <span className="font-semibold text-sm">+{formatCurrency(data.currentMonth.income)}</span>
             </div>
+            
             <div className="flex-between mb-2">
-              <span className="text-secondary text-xs">Fixed Obligations</span>
-              <span className="font-semibold text-sm">{formatCurrency(data.currentMonth.fixedExpenses)}</span>
+              <span className="text-secondary text-xs">Fixed Expenses (-)</span>
+              <span className="font-semibold text-sm text-danger">-{formatCurrency(data.currentMonth.fixedExpenses)}</span>
             </div>
+            
             <div className="flex-between mb-2">
-              <span className="text-secondary text-xs">Variable Spending</span>
-              <span className="font-semibold text-sm">{formatCurrency(data.currentMonth.variableExpenses)}</span>
+              <span className="text-secondary text-xs">EMI Outflow (-)</span>
+              <span className="font-semibold text-sm text-danger">-{formatCurrency(data.insights?.emiTotal || 0)}</span>
             </div>
-            <div className="flex-between pt-2" style={{ borderTop: '1px dashed var(--surface-border)' }}>
-              <span className="font-bold text-xs">Net Position</span>
+
+            <div className="flex-between mb-2">
+              <span className="text-secondary text-xs">CC Usage (+)</span>
+              <span className="font-semibold text-sm">+{formatCurrency(data.currentMonth.ccExpensesCurrent)}</span>
+            </div>
+            
+            <div className="flex-between mb-2">
+              <span className="text-secondary text-xs">CC Bill Payment (-)</span>
+              <span className="font-semibold text-sm text-danger">-{formatCurrency(data.currentMonth.ccPaymentPrev)}</span>
+            </div>
+
+            <div className="flex-between mb-2">
+              <span className="text-secondary text-xs">Variable Spending (-)</span>
+              <span className="font-semibold text-sm text-danger">-{formatCurrency(data.currentMonth.variableExpenses)}</span>
+            </div>
+
+            <div className="flex-between mt-3 pt-2" style={{ borderTop: '1px dashed var(--surface-border)' }}>
+              <span className="font-bold text-sm">Left Off Money</span>
               <span className={`font-bold text-base ${data.currentMonth.netBalance >= 0 ? 'text-success' : 'text-danger'}`}>
                 {formatCurrency(data.currentMonth.netBalance)}
               </span>
@@ -137,20 +166,31 @@ const Dashboard = () => {
               <span className="font-bold flex-center text-sm" style={{ gap: '0.5rem', color: 'var(--accent-primary)' }}>
                 <TrendingUp size={14} /> Projected: {data.nextMonthString}
               </span>
-              <span className="text-[10px] bg-accent-primary text-white px-1.5 py-0.5 rounded font-bold uppercase">Estimated</span>
+              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                {data.nextMonth.expectedFixed < data.currentMonth.expectedFixed && (
+                  <span className="bg-success text-[9px] text-white px-2 py-0.5 rounded-full font-black animate-pulse">
+                    SAVING {formatCurrency(data.currentMonth.expectedFixed - data.nextMonth.expectedFixed)} ✨
+                  </span>
+                )}
+                <span className="text-[10px] bg-accent-primary text-white px-1.5 py-0.5 rounded font-bold uppercase">Estimated</span>
+              </div>
             </div>
           </div>
           <div style={{ padding: '1rem' }}>
             <div className="flex-between mb-2">
-              <span className="text-secondary text-xs">Expected Inflow</span>
+              <span className="text-secondary text-xs">Fixed Income (+)</span>
               <span className="font-semibold text-sm">{formatCurrency(data.nextMonth.expectedIncome)}</span>
             </div>
             <div className="flex-between mb-2">
-              <span className="text-secondary text-xs">Fixed Outflow</span>
-              <span className="font-semibold text-sm text-danger">-{formatCurrency(data.nextMonth.expectedFixed)}</span>
+              <span className="text-secondary text-xs">Fixed Expense (-)</span>
+              <span className="font-semibold text-sm text-danger">-{formatCurrency(data.nextMonth.expectedFixed - (data.insights.emiPercentOfIncome * data.nextMonth.expectedIncome / 100))}</span>
             </div>
             <div className="flex-between mb-2">
-              <span className="text-secondary text-xs">CC Payment Due</span>
+              <span className="text-secondary text-xs">EMI (-)</span>
+              <span className="font-semibold text-sm text-danger">-{formatCurrency(data.insights.emiPercentOfIncome * data.nextMonth.expectedIncome / 100)}</span>
+            </div>
+            <div className="flex-between mb-2">
+              <span className="text-secondary text-xs">CC Payment Due (-)</span>
               <span className="font-semibold text-sm text-danger">-{formatCurrency(data.nextMonth.ccPaymentDue)}</span>
             </div>
             <div className="flex-between pt-2" style={{ borderTop: '1px dashed var(--surface-border)' }}>
@@ -164,7 +204,7 @@ const Dashboard = () => {
       </div>
 
       {/* TOP METRICS HERO - NOW SECOND & COMPACT */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
+      <div className="hero-grid">
         <div className="card glass-panel" style={{ padding: '1rem', borderLeft: '3px solid var(--danger)' }}>
           <div className="flex-between" style={{ marginBottom: '0.5rem' }}>
             <span className="text-[10px] font-bold text-danger uppercase">Today's Spent</span>
@@ -199,7 +239,7 @@ const Dashboard = () => {
       </div>
 
       {/* RATIOS & ANALYTICS GRID */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
+      <div className="ratios-grid">
         <div className="card" style={{ padding: '1.5rem' }}>
           <h4 className="text-sm font-bold text-secondary mb-4 uppercase tracking-wider">Health Indicators</h4>
           <div className="flex-between mb-3">
@@ -235,10 +275,80 @@ const Dashboard = () => {
         </div>
       </div>
 
+      {/* DEBT FREEDOM TRACKER - VERTICAL MOBILE VIEW */}
+      <div className="card" style={{ padding: '1.25rem', background: 'var(--surface-card)', border: '1px solid var(--surface-border)', marginBottom: '1.5rem' }}>
+        <div className="flex-between mb-6">
+          <div className="flex-center gap-3">
+            <div style={{ background: 'rgba(34, 197, 94, 0.1)', padding: '0.5rem', borderRadius: '10px' }}>
+              <TrendingDown size={18} className="text-success" />
+            </div>
+            <div>
+              <h3 className="font-bold text-sm tracking-tight">Debt Freedom Tracker</h3>
+              <p className="text-secondary text-[9px] uppercase font-bold tracking-widest mt-0.5">6-Month Roadmap</p>
+            </div>
+          </div>
+          <span className="text-[8px] bg-success/10 text-success px-2 py-1 rounded-full font-bold uppercase">Active</span>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          {data.projections.map((p: any, i: number) => {
+            const maxVal = Math.max(...data.projections.map((d: any) => d.fixedObligations));
+            const width = maxVal > 0 ? (p.fixedObligations / maxVal) * 100 : 0;
+            
+            return (
+              <div key={i} style={{ position: 'relative' }}>
+                <div className="flex-between mb-1.5">
+                  <span className="text-[10px] font-black uppercase text-secondary tracking-tight">{p.month}</span>
+                  <div className="flex-center gap-2">
+                    {p.savingsGained > 0 && (
+                      <span className="text-[8px] font-black text-success bg-success/10 px-1.5 py-0.5 rounded border border-success/20 animate-pulse">
+                        +{formatCurrency(p.savingsGained)} SAVED
+                      </span>
+                    )}
+                    <span className={`text-[10px] font-black ${p.savingsGained > 0 ? 'text-success' : ''}`}>
+                      {formatCurrency(p.fixedObligations)}
+                    </span>
+                  </div>
+                </div>
+                
+                <div style={{ 
+                  height: '8px', 
+                  background: 'rgba(255, 255, 255, 0.05)', 
+                  borderRadius: '10px', 
+                  overflow: 'hidden',
+                  border: '1px solid var(--surface-border)'
+                }}>
+                  <div 
+                    style={{ 
+                      width: `${width}%`, 
+                      height: '100%', 
+                      background: p.savingsGained > 0 
+                        ? 'linear-gradient(90deg, rgba(34, 197, 94, 0.3), rgba(34, 197, 94, 0.6))' 
+                        : 'linear-gradient(90deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.3))',
+                      borderRadius: '10px',
+                      transition: 'width 1s cubic-bezier(0.4, 0, 0.2, 1)',
+                      borderRight: p.savingsGained > 0 ? '2px solid var(--success-text)' : 'none'
+                    }}
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="mt-6 pt-4" style={{ borderTop: '1px solid var(--surface-border)' }}>
+          <p className="text-secondary text-[10px] leading-relaxed italic text-center">
+            Your monthly burden is projected to drop by <span className="text-success font-bold">{formatCurrency(data.projections[0].fixedObligations - data.projections[data.projections.length - 1].fixedObligations)}</span> by year-end.
+          </p>
+        </div>
+      </div>
+
       {/* MASTER LIST SNEAK PEEK */}
       <div className="card" style={{ padding: '1.5rem' }}>
         <div className="flex-between mb-4">
-          <h3 className="font-bold text-lg">Fixed Master List</h3>
+          <h3 className="font-bold text-lg flex-center gap-2">
+            <CreditCard size={16} className="text-accent-primary" /> Fixed Master List
+          </h3>
           <button 
             onClick={() => window.location.href='/emis'}
             style={{ 
@@ -264,28 +374,35 @@ const Dashboard = () => {
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
-              <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--surface-border)' }}>
-                <th style={{ padding: '0.75rem 0.5rem', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>NAME</th>
-                <th style={{ padding: '0.75rem 0.5rem', fontSize: '0.75rem', color: 'var(--text-secondary)', textAlign: 'right' }}>AMOUNT</th>
-                <th style={{ padding: '0.75rem 0.5rem', fontSize: '0.75rem', color: 'var(--text-secondary)', textAlign: 'center' }}>TYPE</th>
+              <tr style={{ borderBottom: '1px solid var(--surface-border)' }}>
+                <th style={{ textAlign: 'left', padding: '0.75rem 0', fontSize: '0.65rem', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Name</th>
+                <th style={{ textAlign: 'left', padding: '0.75rem 0', fontSize: '0.65rem', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Amount</th>
+                <th style={{ textAlign: 'left', padding: '0.75rem 0', fontSize: '0.65rem', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Status</th>
+                <th style={{ textAlign: 'right', padding: '0.75rem 0', fontSize: '0.65rem', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Type</th>
               </tr>
             </thead>
             <tbody>
-              {data.fixedMasterList?.items.slice(0, 5).map((item: any) => (
+              {data.fixedMasterList.items.map((item: any) => (
                 <tr key={item.id} style={{ borderBottom: '1px solid var(--surface-border)' }}>
-                  <td style={{ padding: '0.875rem 0.5rem', fontSize: '0.875rem', fontWeight: 500 }}>{item.name}</td>
-                  <td style={{ padding: '0.875rem 0.5rem', fontSize: '0.875rem', fontWeight: 700, textAlign: 'right' }}>
-                    {formatCurrency(item.amount)}
+                  <td style={{ padding: '1rem 0' }}>
+                    <div className="font-bold text-sm">{item.name}</div>
+                    <div className="text-[10px] text-secondary">{item.notes}</div>
                   </td>
-                  <td style={{ padding: '0.875rem 0.5rem', textAlign: 'center' }}>
-                    <span style={{ 
-                      fontSize: '10px', 
-                      padding: '2px 6px', 
-                      borderRadius: '4px',
-                      background: item.type === 'INCOME' ? 'var(--success-bg)' : 'var(--danger-bg)',
-                      color: item.type === 'INCOME' ? 'var(--success)' : 'var(--danger)',
-                      fontWeight: 'bold'
-                    }}>{item.type}</span>
+                  <td className="text-sm font-bold">{formatCurrency(item.amount)}</td>
+                  <td style={{ padding: '1rem 0' }}>
+                    {item.remainingTenure !== null ? (
+                      <div className={`text-[10px] font-bold px-2 py-0.5 rounded-full inline-block ${item.remainingTenure <= 2 ? 'bg-success/20 text-success' : 'bg-secondary/20 text-secondary'}`}>
+                        {item.remainingTenure} {item.remainingTenure === 1 ? 'month' : 'months'} left
+                        {item.remainingTenure <= 2 && ' ✨'}
+                      </div>
+                    ) : (
+                      <span className="text-[10px] text-secondary font-medium italic">Fixed</span>
+                    )}
+                  </td>
+                  <td style={{ textAlign: 'right' }}>
+                    <span className={`badge-${item.type === 'INCOME' ? 'success' : 'danger'}`} style={{ fontSize: '0.6rem' }}>
+                      {item.type}
+                    </span>
                   </td>
                 </tr>
               ))}

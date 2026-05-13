@@ -413,14 +413,16 @@ export class AnalyticsService {
     // NEXT MONTH PREVIEW
     const nextExpectedIncome = salaryRule && salaryRule.expectedAmount ? Number(salaryRule.expectedAmount) : currIncome;
 
-    const nextExpectedFixed = emis.reduce((sum, e) => sum + Number(e.monthlyEmi), 0) + 
-                              subs.filter(s => ['MONTHLY', 'YEARLY'].includes(s.frequency)).reduce((sum, s) => sum + Number(s.amount), 0);
+    // Only include EMIs that have remaining payments after this month
+    const nextMonthEmis = emis.filter(e => (e.tenure - e.monthsPaid) > 1);
+    const nextExpectedFixed = nextMonthEmis.reduce((sum, e) => sum + Number(e.monthlyEmi), 0) + 
+                              subs.filter(s => s.active && ['MONTHLY', 'YEARLY'].includes(s.frequency)).reduce((sum, s) => sum + Number(s.amount), 0);
 
-    // CC Payment Due = Sum of outstanding balances
+    // CC Payment Due = Sum of current outstanding (will be due next month)
     const nextCcPaymentDue = creditCards.reduce((sum, c) => sum + Number(c.currentOutstanding), 0);
 
-    const nextEstTotalExp = nextExpectedFixed + currVariable; // assume variable stays same
-    const nextEstBalance = nextExpectedIncome - nextEstTotalExp;
+    const nextEstTotalExp = nextExpectedFixed + currVariable; 
+    const nextEstBalance = nextExpectedIncome - nextEstTotalExp - nextCcPaymentDue;
 
     // INSIGHTS
     const fixedVsVar = ytdTotalExpense > 0 ? (ytdFixed / ytdTotalExpense) * 100 : 0;
@@ -441,13 +443,21 @@ export class AnalyticsService {
     // Fixed Income & Expense Master
     const fixedMaster: any[] = [];
     if (salaryRule && salaryRule.expectedAmount) {
-      fixedMaster.push({ id: 'salary', name: 'Salary Income', amount: Number(salaryRule.expectedAmount), type: 'INCOME', notes: 'Monthly income', active: true });
+      fixedMaster.push({ id: 'salary', name: 'Salary Income', amount: Number(salaryRule.expectedAmount), type: 'INCOME', notes: 'Monthly income', active: true, remainingTenure: null });
     }
     for (const sub of subs) {
-      fixedMaster.push({ id: sub.id, name: sub.note || 'Recurring', amount: Number(sub.amount), type: sub.type, notes: `${sub.frequency.toLowerCase()} ${sub.type.toLowerCase()}`, active: sub.active });
+      fixedMaster.push({ id: sub.id, name: sub.note || 'Recurring', amount: Number(sub.amount), type: sub.type, notes: `${sub.frequency.toLowerCase()} ${sub.type.toLowerCase()}`, active: sub.active, remainingTenure: null });
     }
     for (const emi of emis) {
-      fixedMaster.push({ id: emi.id, name: emi.name, amount: Number(emi.monthlyEmi), type: 'EXPENSE', notes: 'Monthly EMI', active: emi.active });
+      fixedMaster.push({ 
+        id: emi.id, 
+        name: emi.name, 
+        amount: Number(emi.monthlyEmi), 
+        type: 'EXPENSE', 
+        notes: 'Monthly EMI', 
+        active: emi.active,
+        remainingTenure: emi.tenure - emi.monthsPaid 
+      });
     }
 
     const totalFixedIncome = fixedMaster.filter(f => f.type === 'INCOME').reduce((s, f) => s + f.amount, 0);
@@ -468,11 +478,13 @@ export class AnalyticsService {
       currentMonth: {
         income: currIncome,
         fixedExpenses: currFixed,
+        expectedFixed: emis.reduce((sum, e) => sum + Number(e.monthlyEmi), 0) + 
+                       subs.filter(s => s.active && ['MONTHLY', 'YEARLY'].includes(s.frequency)).reduce((sum, s) => sum + Number(s.amount), 0),
         variableExpenses: currVariable,
         ccExpensesCurrent: currCcExpense,
         ccPaymentPrev: currCcPayment,
-        totalExpenses: currTotalExpCalc,
-        netBalance: currNetBalance
+        totalExpenses: currFixed + currVariable + emis.reduce((sum, e) => sum + Number(e.monthlyEmi), 0),
+        netBalance: currIncome - (currFixed + currVariable + emis.reduce((sum, e) => sum + Number(e.monthlyEmi), 0))
       },
       nextMonth: {
         expectedIncome: nextExpectedIncome,
@@ -481,9 +493,28 @@ export class AnalyticsService {
         estTotalExpenses: nextEstTotalExp,
         estBalance: nextEstBalance
       },
+      // 6-MONTH PROJECTION FOR DEBT BURN-DOWN
+      projections: Array.from({ length: 6 }).map((_, i) => {
+        const targetDate = new Date(today.getFullYear(), today.getMonth() + i, 1);
+        const activeEmis = emis.filter(e => (e.tenure - e.monthsPaid) > i);
+        const fixedTotal = activeEmis.reduce((sum, e) => sum + Number(e.monthlyEmi), 0) + 
+                          subs.filter(s => s.active && ['MONTHLY', 'YEARLY'].includes(s.frequency)).reduce((sum, s) => sum + Number(s.amount), 0);
+        
+        // Calculate incremental savings compared to previous month
+        const prevActiveEmis = i === 0 ? emis : emis.filter(e => (e.tenure - e.monthsPaid) > (i - 1));
+        const prevFixedTotal = prevActiveEmis.reduce((sum, e) => sum + Number(e.monthlyEmi), 0) + 
+                               subs.filter(s => s.active).reduce((sum, s) => sum + Number(s.amount), 0);
+        
+        return {
+          month: targetDate.toLocaleString('default', { month: 'short' }),
+          fixedObligations: fixedTotal,
+          savingsGained: i > 0 ? prevFixedTotal - fixedTotal : 0
+        };
+      }),
       insights: {
         fixedVsVariable: fixedVsVar,
-        emiPercentOfIncome: emiPercentOfIncome,
+        emiTotal: emis.length > 0 ? emis.reduce((sum, e) => sum + (Number(e.monthlyEmi) || 0), 0) : 0,
+        emiPercentOfIncome: currIncome > 0 ? (emis.reduce((sum, e) => sum + (Number(e.monthlyEmi) || 0), 0) / currIncome) * 100 : 0,
         ccVsBankSpending: ccVsBank
       },
       fixedMasterList: {

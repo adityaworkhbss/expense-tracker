@@ -4,77 +4,113 @@ import { CreditCard, Tags, PieChart, Download, Settings, User, LogOut, ChevronRi
 
 const More = () => {
   const MENU_ITEMS = [
-    { icon: <PieChart size={20} />, label: 'Analysis & Reports', color: 'var(--accent-primary)', bg: 'var(--bg-tertiary)', path: '/analysis' },
-    { icon: <CreditCard size={20} />, label: 'Payment Methods', color: 'var(--success)', bg: 'var(--success-bg)', path: '/accounts' },
-    { icon: <Tags size={20} />, label: 'Categories Manage', color: 'var(--warning)', bg: 'var(--warning-bg)', path: '/categories' },
-    { icon: <Download size={20} />, label: 'Export Data', color: 'var(--text-primary)', bg: 'var(--surface-border)', path: '/export' },
+    { icon: <PieChart size={20} />, label: 'Analysis & Reports', desc: 'Deep dive into your spending intelligence', color: 'var(--accent-primary)', bg: 'rgba(99, 102, 241, 0.1)', path: '/analysis' },
+    { icon: <CreditCard size={20} />, label: 'Payment Methods', desc: 'Manage banks, cards, and wallets', color: 'var(--success)', bg: 'rgba(16, 185, 129, 0.1)', path: '/accounts' },
+    { icon: <Tags size={20} />, label: 'Categories Manage', desc: 'Customize your transaction rules', color: 'var(--warning)', bg: 'rgba(245, 158, 11, 0.1)', path: '/categories' },
+    { icon: <Download size={20} />, label: 'Export Data', desc: 'Download CSV or PDF reports', color: 'var(--text-primary)', bg: 'rgba(255, 255, 255, 0.05)', path: '/export' },
   ];
 
   const PREFERENCES = [
-    { icon: <User size={20} />, label: 'Profile' },
-    { icon: <Bell size={20} />, label: 'Notifications' },
-    { icon: <Settings size={20} />, label: 'Settings' },
+    { icon: <Bell size={18} />, label: 'Notifications', desc: 'Budget alerts and bill reminders' },
+    { icon: <Settings size={18} />, label: 'App Settings', desc: 'Theme, currency, and security' },
   ];
 
   return (
-    <div className="page-container animate-fade-in">
-      <header className="dashboard-header" style={{ marginBottom: '2rem' }}>
-        <h1 className="text-2xl font-bold">Manage</h1>
+    <div className="page-container animate-fade-in" style={{ paddingBottom: '8rem' }}>
+      {/* PREMIUM PROFILE HEADER */}
+      <header style={{ marginBottom: '2.5rem', marginTop: '1rem' }}>
+        <div className="flex-center" style={{ gap: '1.25rem', justifyContent: 'flex-start' }}>
+          <div style={{ 
+            width: '64px', 
+            height: '64px', 
+            borderRadius: '20px', 
+            background: 'linear-gradient(135deg, var(--accent-primary), var(--success))',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '1.5rem',
+            fontWeight: 800,
+            color: '#fff',
+            boxShadow: '0 8px 16px rgba(99, 102, 241, 0.2)'
+          }}>
+            AS
+          </div>
+          <div>
+            <h1 className="text-xl font-bold tracking-tight">Aditya Sharma</h1>
+            <p className="text-secondary text-xs font-medium">Premium Financial Intelligence</p>
+          </div>
+        </div>
       </header>
 
       <section className="animate-slide-up">
-        <div className="card" style={{ padding: '0', overflow: 'hidden', marginBottom: '2rem' }}>
+        <h3 className="text-[10px] font-black text-secondary uppercase tracking-[0.2em] mb-4 pl-1">Financial Environment</h3>
+        <div className="card" style={{ padding: '0', overflow: 'hidden', marginBottom: '2.5rem', borderRadius: '24px', border: '1px solid var(--surface-border)' }}>
           {MENU_ITEMS.map((item, index) => (
             <Link 
               to={item.path}
               key={index}
               className="flex-between"
               style={{
-                padding: '1.25rem',
+                padding: '1.25rem 1.5rem',
                 borderBottom: index !== MENU_ITEMS.length - 1 ? '1px solid var(--surface-border)' : 'none',
                 textDecoration: 'none',
                 color: 'inherit',
                 display: 'flex',
-                transition: 'background 0.2s'
+                transition: 'all 0.2s ease'
               }}
-              onMouseOver={(e) => e.currentTarget.style.background = 'var(--surface-glass)'}
+              onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}
               onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
             >
-              <div className="flex-center" style={{ gap: '1rem' }}>
-                <div className="upcoming-icon" style={{ background: item.bg, color: item.color }}>
+              <div className="flex-center" style={{ gap: '1.25rem' }}>
+                <div style={{ 
+                  width: '40px', 
+                  height: '40px', 
+                  borderRadius: '12px', 
+                  background: item.bg, 
+                  color: item.color,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
                   {item.icon}
                 </div>
-                <span className="font-medium">{item.label}</span>
+                <div>
+                  <span className="font-bold text-sm block">{item.label}</span>
+                  <span className="text-[10px] text-secondary opacity-60">{item.desc}</span>
+                </div>
               </div>
-              <ChevronRight size={20} className="text-secondary" />
+              <ChevronRight size={18} className="text-secondary opacity-30" />
             </Link>
           ))}
         </div>
       </section>
 
       <section className="animate-slide-up" style={{ animationDelay: '0.1s' }}>
-        <h3 className="text-sm font-semibold text-secondary" style={{ marginBottom: '1rem', paddingLeft: '0.5rem' }}>Preferences</h3>
-        <div className="card" style={{ padding: '0', overflow: 'hidden', marginBottom: '2rem' }}>
+        <h3 className="text-[10px] font-black text-secondary uppercase tracking-[0.2em] mb-4 pl-1">System Preferences</h3>
+        <div className="card" style={{ padding: '0', overflow: 'hidden', marginBottom: '2.5rem', borderRadius: '24px', border: '1px solid var(--surface-border)' }}>
           {PREFERENCES.map((item, index) => (
             <div 
               key={index}
               className="flex-between"
               style={{
-                padding: '1.25rem',
+                padding: '1.25rem 1.5rem',
                 borderBottom: index !== PREFERENCES.length - 1 ? '1px solid var(--surface-border)' : 'none',
                 cursor: 'pointer',
-                transition: 'background 0.2s'
+                transition: 'all 0.2s ease'
               }}
-              onMouseOver={(e) => e.currentTarget.style.background = 'var(--surface-glass)'}
+              onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}
               onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
             >
-              <div className="flex-center" style={{ gap: '1rem' }}>
-                <div className="text-secondary">
+              <div className="flex-center" style={{ gap: '1.25rem' }}>
+                <div className="text-secondary opacity-60" style={{ width: '40px', display: 'flex', justifyContent: 'center' }}>
                   {item.icon}
                 </div>
-                <span className="font-medium">{item.label}</span>
+                <div>
+                  <span className="font-bold text-sm block">{item.label}</span>
+                  <span className="text-[10px] text-secondary opacity-60">{item.desc}</span>
+                </div>
               </div>
-              <ChevronRight size={20} className="text-secondary" />
+              <ChevronRight size={18} className="text-secondary opacity-30" />
             </div>
           ))}
         </div>
@@ -85,14 +121,25 @@ const More = () => {
           className="btn" 
           style={{ 
             width: '100%', 
-            background: 'var(--danger-bg)', 
+            background: 'rgba(239, 68, 68, 0.05)', 
             color: 'var(--danger)',
-            border: '1px solid rgba(239, 68, 68, 0.2)'
+            border: '1px solid rgba(239, 68, 68, 0.2)',
+            borderRadius: '16px',
+            padding: '1rem',
+            fontSize: '0.9rem',
+            fontWeight: 800,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.75rem'
           }}
         >
-          <LogOut size={20} />
+          <LogOut size={18} />
           Sign Out
         </button>
+        <p className="text-center text-[9px] text-secondary mt-6 opacity-30 font-bold uppercase tracking-widest">
+          Version 2.4.0 • Debt Freedom Tracker
+        </p>
       </section>
     </div>
   );

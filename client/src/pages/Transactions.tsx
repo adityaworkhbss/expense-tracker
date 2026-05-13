@@ -266,57 +266,101 @@ const Transactions = () => {
       )}
 
       {/* Tabs */}
-      <div className="glass-panel" style={{ padding: '0.5rem', display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
+      <div className="glass-panel" style={{ padding: '0.4rem', display: 'flex', gap: '0.4rem', marginBottom: '2rem', borderRadius: '16px' }}>
         {['ALL', 'EXPENSE', 'INCOME'].map(tab => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
             style={{
-              flex: 1, padding: '0.5rem',
-              borderRadius: 'var(--radius-sm)', border: 'none',
-              background: activeTab === tab ? 'var(--surface-border)' : 'transparent',
-              color: activeTab === tab ? 'var(--text-primary)' : 'var(--text-secondary)',
-              fontWeight: activeTab === tab ? 600 : 400,
-              cursor: 'pointer', fontSize: '0.875rem',
-              transition: 'all 0.2s'
+              flex: 1, padding: '0.75rem',
+              borderRadius: '12px', border: 'none',
+              background: activeTab === tab ? 'var(--accent-primary)' : 'transparent',
+              color: activeTab === tab ? '#fff' : 'var(--text-secondary)',
+              fontWeight: activeTab === tab ? 800 : 600,
+              cursor: 'pointer', fontSize: '0.8rem',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              boxShadow: activeTab === tab ? '0 4px 12px rgba(99, 102, 241, 0.3)' : 'none'
             }}
           >
-            {tab === 'ALL' ? 'All' : tab === 'EXPENSE' ? 'Expenses' : 'Income'}
+            {tab === 'ALL' ? 'All Activity' : tab === 'EXPENSE' ? 'Spent' : 'Income'}
           </button>
         ))}
       </div>
 
       {/* List */}
       {loading ? (
-        <div className="flex-center" style={{ height: '200px' }}>Loading...</div>
+        <div className="flex-center" style={{ height: '200px' }}>
+          <div className="animate-spin" style={{ width: '30px', height: '30px', border: '3px solid rgba(255,255,255,0.1)', borderTopColor: 'var(--accent-primary)', borderRadius: '50%' }} />
+        </div>
       ) : transactions.length === 0 ? (
-        <div className="card" style={{ textAlign: 'center', padding: '3rem 1.5rem' }}>
-          <p className="text-secondary">No transactions found.</p>
+        <div className="card" style={{ textAlign: 'center', padding: '4rem 2rem', background: 'transparent', border: '1px dashed var(--surface-border)' }}>
+          <p className="text-secondary text-sm">No transaction intelligence found for this period.</p>
         </div>
       ) : (
-        <div className="upcoming-list">
-          {transactions.map((t, i) => (
-            <div key={t.id} className="upcoming-item animate-slide-up" style={{ animationDelay: `${i * 0.03}s` }}>
-              <div className="upcoming-info">
-                <div className="upcoming-icon" style={{
-                  background: t.type === 'INCOME' ? 'var(--success-bg)' : 'var(--bg-tertiary)',
-                  color: t.type === 'INCOME' ? 'var(--success)' : 'var(--text-primary)'
-                }}>
-                  {t.type === 'INCOME' ? <ArrowDownLeft size={20} /> : <ArrowUpRight size={20} />}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          {transactions.map((t, i) => {
+            const showDateHeader = i === 0 || formatDate(transactions[i-1].transactionDate) !== formatDate(t.transactionDate);
+            
+            return (
+              <React.Fragment key={t.id}>
+                {showDateHeader && (
+                  <div style={{ padding: '1.5rem 0.5rem 0.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                    <span className="text-[10px] font-black uppercase text-secondary tracking-[0.2em]">{formatDate(t.transactionDate)}</span>
+                    <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, var(--surface-border), transparent)' }} />
+                  </div>
+                )}
+                <div 
+                  className="card animate-slide-up" 
+                  style={{ 
+                    padding: '1rem', 
+                    animationDelay: `${i * 0.05}s`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    border: '1px solid var(--surface-border)',
+                    background: 'var(--surface-card)',
+                    borderRadius: '16px'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                    <div style={{ 
+                      width: '44px', 
+                      height: '44px', 
+                      borderRadius: '14px', 
+                      background: t.type === 'INCOME' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(255, 255, 255, 0.03)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: t.type === 'INCOME' ? 'var(--success)' : 'var(--text-secondary)',
+                      border: t.type === 'INCOME' ? '1px solid rgba(16, 185, 129, 0.2)' : '1px solid var(--surface-border)'
+                    }}>
+                      {t.type === 'INCOME' ? <ArrowDownLeft size={20} /> : <ArrowUpRight size={20} />}
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-sm truncate max-w-[150px]" style={{ marginBottom: '4px' }}>{t.merchant || t.note || 'Transaction'}</h4>
+                      <p className="text-[10px] text-secondary font-bold uppercase tracking-wider" style={{ marginBottom: '2px' }}>
+                        {t.category?.name || 'Uncategorized'}
+                      </p>
+                      <p className="text-[9px] text-secondary opacity-40 font-medium">
+                        {t.account?.name || 'Wallet'}
+                      </p>
+                    </div>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div 
+                      className="font-black text-sm" 
+                      style={{ color: t.type === 'INCOME' ? 'var(--success)' : 'var(--text-primary)' }}
+                    >
+                      {t.type === 'INCOME' ? '+' : '-'}{formatCurrency(t.amount)}
+                    </div>
+                    {t.type === 'EXPENSE' && t.account?.type === 'CREDIT_CARD' && (
+                      <span className="text-[8px] bg-danger/10 text-danger px-1.5 py-0.5 rounded font-black uppercase mt-1 inline-block">Credit</span>
+                    )}
+                  </div>
                 </div>
-                <div className="upcoming-details">
-                  <h4>{t.merchant || t.note || 'Transaction'}</h4>
-                  <p>{t.category?.name || 'Uncategorized'} · {t.account?.name || ''}</p>
-                </div>
-              </div>
-              <div className="upcoming-amount">
-                <div className="amount" style={{ color: t.type === 'INCOME' ? 'var(--success)' : 'var(--text-primary)' }}>
-                  {t.type === 'INCOME' ? '+' : '-'}{formatCurrency(t.amount)}
-                </div>
-                <div className="date">{formatDate(t.transactionDate)}</div>
-              </div>
-            </div>
-          ))}
+              </React.Fragment>
+            );
+          })}
         </div>
       )}
     </div>
