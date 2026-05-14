@@ -1,32 +1,28 @@
 import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class RegisterDto {
-  @ApiProperty({ example: 'Aditya Sharma' })
+export class GoogleAuthDto {
+  @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  name: string;
-
-  @ApiProperty({ example: 'aditya@example.com' })
-  @IsEmail()
-  email: string;
-
-  @ApiProperty({ example: 'StrongP@ss123', minLength: 8 })
-  @IsString()
-  @MinLength(8)
-  password: string;
+  idToken: string;
 }
 
-export class LoginDto {
-  @ApiProperty({ example: 'aditya@example.com' })
-  @IsEmail()
-  email: string;
-
-  @ApiProperty({ example: 'StrongP@ss123' })
+export class UpdateProfileDto {
+  @ApiProperty({ example: 'Aditya Sharma', required: false })
   @IsString()
-  @IsNotEmpty()
-  password: string;
+  name?: string;
+
+  @ApiProperty({ example: 'Asia/Kolkata', required: false })
+  @IsString()
+  timezone?: string;
+
+  @ApiProperty({ example: 'INR', required: false })
+  @IsString()
+  currency?: string;
 }
+
+
 
 export class RefreshTokenDto {
   @ApiProperty()

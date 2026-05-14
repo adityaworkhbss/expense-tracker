@@ -5,9 +5,9 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import * as bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
+import { OAuth2Client } from 'google-auth-library';
 import { PrismaService } from '../prisma';
 
 export interface JwtPayload {
@@ -22,60 +22,62 @@ export interface AuthTokens {
 
 @Injectable()
 export class AuthService {
+  private googleClient: OAuth2Client;
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwt: JwtService,
     private readonly config: ConfigService,
-  ) {}
-
-  async register(
-    name: string,
-    email: string,
-    password: string,
-  ): Promise<AuthTokens & { user: any }> {
-    const existing = await this.prisma.user.findUnique({ where: { email } });
-    if (existing) {
-      throw new ConflictException('Email already registered');
-    }
-
-    const passwordHash = await bcrypt.hash(password, 12);
-
-    const user = await this.prisma.user.create({
-      data: {
-        name,
-        email,
-        passwordHash,
-        salaryRules: {
-          create: {
-            salaryDay: this.config.get<number>('DEFAULT_SALARY_DAY', 10),
-            expectedAmount: this.config.get<number>('DEFAULT_SALARY_AMOUNT', 87500),
-          },
-        },
-      },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        timezone: true,
-        currency: true,
-        createdAt: true,
-      },
-    });
-
-    const tokens = await this.generateTokens(user.id, user.email);
-
-    return { ...tokens, user };
+  ) {
+    this.googleClient = new OAuth2Client(this.config.get<string>('GOOGLE_CLIENT_ID'));
   }
 
-  async login(email: string, password: string): Promise<AuthTokens & { user: any }> {
-    const user = await this.prisma.user.findUnique({ where: { email } });
-    if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+  async googleAuth(idToken: string): Promise<AuthTokens & { user: any }> {
+    let ticket;
+    try {
+      ticket = await this.googleClient.verifyIdToken({
+        idToken,
+        audience: this.config.get<string>('GOOGLE_CLIENT_ID'),
+      });
+    } catch (error) {
+      throw new UnauthorizedException('Invalid Google token');
     }
 
-    const valid = await bcrypt.compare(password, user.passwordHash);
-    if (!valid) {
-      throw new UnauthorizedException('Invalid credentials');
+    const payload = ticket.getPayload();
+    if (!payload || !payload.email) {
+      throw new UnauthorizedException('Invalid Google token payload');
+    }
+
+    const email = payload.email;
+    const name = payload.name || 'User';
+
+    let user = await this.prisma.user.findUnique({ where: { email } });
+
+    if (!user) {
+      user = await this.prisma.user.create({
+        data: {
+          name,
+          email,
+          passwordHash: 'google_auth_only',
+          salaryRules: {
+            create: {
+              salaryDay: this.config.get<number>('DEFAULT_SALARY_DAY', 10),
+              expectedAmount: this.config.get<number>('DEFAULT_SALARY_AMOUNT', 87500),
+            },
+          },
+        },
+      });
+      
+      // Also create a default account for new users
+      await this.prisma.account.create({
+        data: {
+          userId: user.id,
+          name: 'Main Account',
+          type: 'PAY_NOW',
+          openingBalance: 0,
+          currentBalance: 0,
+        }
+      });
     }
 
     const tokens = await this.generateTokens(user.id, user.email);
@@ -137,6 +139,22 @@ export class AuthService {
     }
 
     return user;
+  }
+
+  async updateProfile(userId: string, data: { name?: string; timezone?: string; currency?: string }) {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        timezone: true,
+        currency: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
   }
 
   async validateUser(payload: JwtPayload) {

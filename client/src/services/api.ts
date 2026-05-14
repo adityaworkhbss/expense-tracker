@@ -1,15 +1,20 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://expense-tracker-x0gb.onrender.com';
-const TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlYWE4OGEwYS0wZTcwLTRhYTEtODdmZC0wZDA2ZjgxNTZhODQiLCJlbWFpbCI6ImFkbWluQGV4cGVuc2UtdHJhY2tlci5jb20iLCJpYXQiOjE3Nzg2MTgyMDQsImV4cCI6MTc3OTIyMzAwNH0.M6PeIQxyVlmva_2CORxfcv53xC4kzTHF8qQraO7dPqE';
-
+const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:3000' : 'https://expense-tracker-x0gb.onrender.com');
 const api = axios.create({
   baseURL: API_BASE_URL,
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
-    'Authorization': `Bearer ${TOKEN}`
   }
 });
+
+export const authApi = {
+  googleLogin: (idToken: string) => api.post('/auth/google', { idToken }).then(res => res.data),
+  logout: () => api.post('/auth/logout').then(res => res.data),
+  getMe: () => api.get('/auth/me').then(res => res.data),
+  updateProfile: (data: any) => api.put('/auth/profile', data).then(res => res.data),
+};
 
 export const analyticsApi = {
   getExcelDashboard: () => api.get('/analytics/excel-dashboard').then(res => res.data),

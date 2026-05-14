@@ -1,7 +1,10 @@
-import { Link } from 'react-router-dom';
-import { CreditCard, Tags, PieChart, Download, Settings, LogOut, ChevronRight, Bell } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { CreditCard, Tags, PieChart, Download, Settings, LogOut, ChevronRight, Bell, User as UserIcon } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const More = () => {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const MENU_ITEMS = [
     { icon: <PieChart size={20} />, label: 'Analysis & Reports', desc: 'Deep dive into your spending intelligence', color: 'var(--accent-primary)', bg: 'rgba(99, 102, 241, 0.1)', path: '/analysis' },
     { icon: <CreditCard size={20} />, label: 'Payment Methods', desc: 'Manage banks, cards, and wallets', color: 'var(--success)', bg: 'rgba(16, 185, 129, 0.1)', path: '/accounts' },
@@ -10,9 +13,15 @@ const More = () => {
   ];
 
   const PREFERENCES = [
+    { icon: <UserIcon size={18} />, label: 'Edit Profile', desc: 'Manage personal details', path: '/profile' },
     { icon: <Bell size={18} />, label: 'Notifications', desc: 'Budget alerts and bill reminders' },
     { icon: <Settings size={18} />, label: 'App Settings', desc: 'Theme, currency, and security' },
   ];
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
 
   return (
     <div className="page-container animate-fade-in" style={{ paddingBottom: '8rem' }}>
@@ -32,11 +41,11 @@ const More = () => {
             color: '#fff',
             boxShadow: '0 8px 16px rgba(99, 102, 241, 0.2)'
           }}>
-            AS
+            {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight">Aditya Sharma</h1>
-            <p className="text-secondary text-xs font-medium">Premium Financial Intelligence</p>
+            <h1 className="text-xl font-bold tracking-tight">{user?.name || 'User'}</h1>
+            <p className="text-secondary text-xs font-medium">{user?.email || 'Premium Financial Intelligence'}</p>
           </div>
         </div>
       </header>
@@ -90,6 +99,7 @@ const More = () => {
           {PREFERENCES.map((item, index) => (
             <div 
               key={index}
+              onClick={() => item.path && navigate(item.path)}
               className="flex-between"
               style={{
                 padding: '1.25rem 1.5rem',
@@ -118,6 +128,7 @@ const More = () => {
       <section className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
         <button 
           className="btn" 
+          onClick={handleLogout}
           style={{ 
             width: '100%', 
             background: 'rgba(239, 68, 68, 0.05)', 
