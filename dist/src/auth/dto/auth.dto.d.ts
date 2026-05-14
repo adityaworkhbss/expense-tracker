@@ -1,11 +1,10 @@
-export declare class RegisterDto {
-    name: string;
-    email: string;
-    password: string;
+export declare class GoogleAuthDto {
+    idToken: string;
 }
-export declare class LoginDto {
-    email: string;
-    password: string;
+export declare class UpdateProfileDto {
+    name?: string;
+    timezone?: string;
+    currency?: string;
 }
 export declare class RefreshTokenDto {
     refreshToken: string;

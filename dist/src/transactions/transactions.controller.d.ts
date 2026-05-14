@@ -13,6 +13,7 @@ export declare class TransactionsController {
         failed: number;
         errors: string[];
     }>;
+    findOne(userId: string, id: string): Promise<any>;
     update(userId: string, id: string, dto: UpdateTransactionDto): Promise<any>;
     remove(userId: string, id: string): Promise<{
         message: string;

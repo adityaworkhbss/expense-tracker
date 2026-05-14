@@ -9,48 +9,40 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RefreshTokenDto = exports.LoginDto = exports.RegisterDto = void 0;
+exports.RefreshTokenDto = exports.UpdateProfileDto = exports.GoogleAuthDto = void 0;
 const class_validator_1 = require("class-validator");
 const swagger_1 = require("@nestjs/swagger");
-class RegisterDto {
+class GoogleAuthDto {
+    idToken;
+}
+exports.GoogleAuthDto = GoogleAuthDto;
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], GoogleAuthDto.prototype, "idToken", void 0);
+class UpdateProfileDto {
     name;
-    email;
-    password;
+    timezone;
+    currency;
 }
-exports.RegisterDto = RegisterDto;
+exports.UpdateProfileDto = UpdateProfileDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'Aditya Sharma' }),
+    (0, swagger_1.ApiProperty)({ example: 'Aditya Sharma', required: false }),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
-], RegisterDto.prototype, "name", void 0);
+], UpdateProfileDto.prototype, "name", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'aditya@example.com' }),
-    (0, class_validator_1.IsEmail)(),
-    __metadata("design:type", String)
-], RegisterDto.prototype, "email", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ example: 'StrongP@ss123', minLength: 8 }),
+    (0, swagger_1.ApiProperty)({ example: 'Asia/Kolkata', required: false }),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.MinLength)(8),
     __metadata("design:type", String)
-], RegisterDto.prototype, "password", void 0);
-class LoginDto {
-    email;
-    password;
-}
-exports.LoginDto = LoginDto;
+], UpdateProfileDto.prototype, "timezone", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'aditya@example.com' }),
-    (0, class_validator_1.IsEmail)(),
-    __metadata("design:type", String)
-], LoginDto.prototype, "email", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ example: 'StrongP@ss123' }),
+    (0, swagger_1.ApiProperty)({ example: 'INR', required: false }),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
-], LoginDto.prototype, "password", void 0);
+], UpdateProfileDto.prototype, "currency", void 0);
 class RefreshTokenDto {
     refreshToken;
 }

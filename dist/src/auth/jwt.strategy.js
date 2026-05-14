@@ -19,7 +19,18 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
     authService;
     constructor(authService, config) {
         super({
-            jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
+            jwtFromRequest: passport_jwt_1.ExtractJwt.fromExtractors([
+                (request) => {
+                    let token = null;
+                    if (request && request.cookies) {
+                        token = request.cookies['accessToken'];
+                    }
+                    if (!token && request.headers.authorization) {
+                        token = request.headers.authorization.split(' ')[1];
+                    }
+                    return token;
+                },
+            ]),
             ignoreExpiration: false,
             secretOrKey: config.get('JWT_SECRET') || '',
         });

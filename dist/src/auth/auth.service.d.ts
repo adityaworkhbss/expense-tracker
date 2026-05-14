@@ -13,16 +13,19 @@ export declare class AuthService {
     private readonly prisma;
     private readonly jwt;
     private readonly config;
+    private googleClient;
     constructor(prisma: PrismaService, jwt: JwtService, config: ConfigService);
-    register(name: string, email: string, password: string): Promise<AuthTokens & {
-        user: any;
-    }>;
-    login(email: string, password: string): Promise<AuthTokens & {
+    googleAuth(idToken: string): Promise<AuthTokens & {
         user: any;
     }>;
     refreshTokens(refreshToken: string): Promise<AuthTokens>;
     logout(refreshToken: string): Promise<void>;
     getProfile(userId: string): Promise<any>;
+    updateProfile(userId: string, data: {
+        name?: string;
+        timezone?: string;
+        currency?: string;
+    }): Promise<any>;
     validateUser(payload: JwtPayload): Promise<any>;
     private generateTokens;
 }

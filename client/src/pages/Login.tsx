@@ -13,9 +13,15 @@ const Login = () => {
     const initGoogle = () => {
       // @ts-ignore
       if (window.google) {
+        const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+        if (!clientId) {
+          console.error('Google Client ID is missing in environment variables');
+          return;
+        }
+
         // @ts-ignore
         window.google.accounts.id.initialize({
-          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || '13470005574-e865f1e8q4v19r9m902l3r5a7m0u3n8h.apps.googleusercontent.com',
+          client_id: clientId,
           callback: handleCredentialResponse,
         });
         

@@ -40,6 +40,7 @@ export class AuthService {
         audience: this.config.get<string>('GOOGLE_CLIENT_ID'),
       });
     } catch (error) {
+      console.error('Google Auth Verification Error:', error);
       throw new UnauthorizedException('Invalid Google token');
     }
 
@@ -61,8 +62,8 @@ export class AuthService {
           passwordHash: 'google_auth_only',
           salaryRules: {
             create: {
-              salaryDay: this.config.get<number>('DEFAULT_SALARY_DAY', 10),
-              expectedAmount: this.config.get<number>('DEFAULT_SALARY_AMOUNT', 87500),
+              salaryDay: Number(this.config.get<number>('DEFAULT_SALARY_DAY', 10)),
+              expectedAmount: Number(this.config.get<number>('DEFAULT_SALARY_AMOUNT', 87500)),
             },
           },
         },
@@ -174,8 +175,13 @@ export class AuthService {
   ): Promise<AuthTokens> {
     const payload: JwtPayload = { sub: userId, email };
 
+    const jwtSecret = this.config.get<string>('JWT_SECRET');
+    if (!jwtSecret) {
+      throw new Error('JWT_SECRET is not defined in environment variables');
+    }
+
     const accessToken = this.jwt.sign(payload, {
-      secret: this.config.get<string>('JWT_SECRET'),
+      secret: jwtSecret,
       expiresIn: this.config.get<string>('JWT_EXPIRES_IN', '15m') as any,
     });
 

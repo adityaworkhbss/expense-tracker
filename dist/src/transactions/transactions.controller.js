@@ -74,6 +74,9 @@ let TransactionsController = class TransactionsController {
     importTransactions(userId, transactions) {
         return this.transactionsService.importTransactions(userId, transactions);
     }
+    findOne(userId, id) {
+        return this.transactionsService.findOne(userId, id);
+    }
     update(userId, id, dto) {
         return this.transactionsService.update(userId, id, dto);
     }
@@ -132,6 +135,15 @@ __decorate([
     __metadata("design:paramtypes", [String, Array]),
     __metadata("design:returntype", void 0)
 ], TransactionsController.prototype, "importTransactions", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get a single transaction' }),
+    __param(0, (0, common_2.CurrentUser)('id')),
+    __param(1, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", void 0)
+], TransactionsController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Put)(':id'),
     (0, swagger_1.ApiOperation)({ summary: 'Update a transaction' }),

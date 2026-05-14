@@ -1,17 +1,18 @@
+import * as express from 'express';
 import { AuthService } from './auth.service';
-import { RegisterDto, LoginDto, RefreshTokenDto } from './dto/auth.dto';
+import { GoogleAuthDto, UpdateProfileDto } from './dto/auth.dto';
 export declare class AuthController {
     private readonly authService;
     constructor(authService: AuthService);
-    register(dto: RegisterDto): Promise<import("./auth.service").AuthTokens & {
+    googleAuth(dto: GoogleAuthDto, res: express.Response): Promise<{
         user: any;
     }>;
-    login(dto: LoginDto): Promise<import("./auth.service").AuthTokens & {
-        user: any;
+    refresh(req: express.Request, res: express.Response): Promise<express.Response<any, Record<string, any>> | {
+        message: string;
     }>;
-    refresh(dto: RefreshTokenDto): Promise<import("./auth.service").AuthTokens>;
-    logout(dto: RefreshTokenDto): Promise<{
+    logout(req: express.Request, res: express.Response): Promise<{
         message: string;
     }>;
     me(userId: string): Promise<any>;
+    updateProfile(userId: string, dto: UpdateProfileDto): Promise<any>;
 }
