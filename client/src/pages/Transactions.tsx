@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowUpRight, ArrowDownLeft, Plus, X, AlertCircle, Check, Edit2, Trash2 } from 'lucide-react';
 import { transactionsApi, accountsApi, categoriesApi } from '../services/api';
+import CustomSelect from '../components/CustomSelect';
 
 const Transactions = () => {
   const [activeTab, setActiveTab] = useState('ALL');
@@ -53,11 +54,16 @@ const Transactions = () => {
     setEditingTxId(null);
     setShowAdd(true);
     setError('');
+    
+    // Use existing accounts if available to avoid flash and closure bugs
+    const defaultAccountId = accounts.length > 0 ? accounts[0].id : '';
+    
     setNewTx({
-      type: 'EXPENSE', amount: '', accountId: '',
+      type: 'EXPENSE', amount: '', accountId: defaultAccountId,
       categoryId: '', merchant: '', note: '',
       transactionDate: new Date().toISOString().split('T')[0],
     });
+
     try {
       const [accs, cats] = await Promise.all([
         accountsApi.getAccounts(),
@@ -66,9 +72,14 @@ const Transactions = () => {
       const activeAccs = accs.filter((a: any) => a.isActive !== false);
       setAccounts(activeAccs);
       setCategories(cats);
-      if (activeAccs.length > 0 && !newTx.accountId) {
-        setNewTx(prev => ({ ...prev, accountId: activeAccs[0].id }));
-      }
+      
+      // Ensure we set a default if we just loaded them for the first time
+      setNewTx(prev => {
+        if (!prev.accountId && activeAccs.length > 0) {
+          return { ...prev, accountId: activeAccs[0].id };
+        }
+        return prev;
+      });
     } catch (err) {
       console.error(err);
     }
@@ -250,34 +261,34 @@ const Transactions = () => {
             </div>
 
             {/* Payment Method */}
-            <div style={{ marginBottom: '1rem' }}>
+            <div style={{ marginBottom: '1rem', position: 'relative', zIndex: 60 }}>
               <label className="text-sm text-secondary">Payment Method</label>
               {accounts.length === 0 ? (
                 <p className="text-sm text-warning" style={{ marginTop: '0.35rem' }}>
                   No payment methods found. Add one in Manage → Payment Methods first.
                 </p>
               ) : (
-                <select className="input" value={newTx.accountId}
-                  onChange={e => setNewTx({ ...newTx, accountId: e.target.value })}>
-                  {accounts.map(a => (
-                    <option key={a.id} value={a.id}>
-                      {a.name} ({a.type.replace('_', ' ')})
-                    </option>
-                  ))}
-                </select>
+                <CustomSelect 
+                  value={newTx.accountId}
+                  onChange={(val) => setNewTx({ ...newTx, accountId: val })}
+                  options={accounts.map(a => ({ value: a.id, label: `${a.name} (${a.type.replace('_', ' ')})` }))}
+                  placeholder="Select payment method"
+                />
               )}
             </div>
 
             {/* Category */}
-            <div style={{ marginBottom: '1rem' }}>
+            <div style={{ marginBottom: '1rem', position: 'relative', zIndex: 50 }}>
               <label className="text-sm text-secondary">Category</label>
-              <select className="input" value={newTx.categoryId}
-                onChange={e => setNewTx({ ...newTx, categoryId: e.target.value })}>
-                <option value="">— None —</option>
-                {filteredCategories.map(c => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
-                ))}
-              </select>
+              <CustomSelect 
+                value={newTx.categoryId}
+                onChange={(val) => setNewTx({ ...newTx, categoryId: val })}
+                options={[
+                  { value: '', label: '— None —' },
+                  ...filteredCategories.map(c => ({ value: c.id, label: c.name }))
+                ]}
+                placeholder="Select category"
+              />
             </div>
 
             {/* Date & Merchant */}
