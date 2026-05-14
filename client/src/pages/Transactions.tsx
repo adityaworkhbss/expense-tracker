@@ -78,6 +78,18 @@ const Transactions = () => {
     setEditingTxId(tx.id);
     setShowAdd(true);
     setError('');
+    
+    // Populate form immediately
+    setNewTx({
+      type: tx.type,
+      amount: String(tx.amount),
+      accountId: tx.accountId || '',
+      categoryId: tx.categoryId || '',
+      merchant: tx.merchant || '',
+      note: tx.note || '',
+      transactionDate: new Date(tx.transactionDate).toISOString().split('T')[0],
+    });
+
     try {
       const [accs, cats] = await Promise.all([
         accountsApi.getAccounts(),
@@ -86,15 +98,6 @@ const Transactions = () => {
       const activeAccs = accs.filter((a: any) => a.isActive !== false);
       setAccounts(activeAccs);
       setCategories(cats);
-      setNewTx({
-        type: tx.type,
-        amount: String(tx.amount),
-        accountId: tx.accountId || '',
-        categoryId: tx.categoryId || '',
-        merchant: tx.merchant || '',
-        note: tx.note || '',
-        transactionDate: new Date(tx.transactionDate).toISOString().split('T')[0],
-      });
     } catch (err) {
       console.error(err);
     }
@@ -410,10 +413,10 @@ const Transactions = () => {
                       <span className="text-[8px] bg-danger/10 text-danger px-1.5 py-0.5 rounded font-black uppercase mt-1 inline-block">Credit</span>
                     )}
                     <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '0.75rem' }}>
-                      <button onClick={() => openEditForm(t)} className="text-secondary hover:text-primary transition-colors" title="Edit">
+                      <button onClick={() => openEditForm(t)} className="text-secondary hover:text-primary transition-colors" title="Edit" style={{ background: 'transparent', border: 'none', padding: 0, cursor: 'pointer' }}>
                         <Edit2 size={16} />
                       </button>
-                      <button onClick={() => handleDeleteTransaction(t.id)} className="text-secondary hover:text-danger transition-colors" title="Delete">
+                      <button onClick={() => handleDeleteTransaction(t.id)} className="text-secondary hover:text-danger transition-colors" title="Delete" style={{ background: 'transparent', border: 'none', padding: 0, cursor: 'pointer' }}>
                         <Trash2 size={16} />
                       </button>
                     </div>
