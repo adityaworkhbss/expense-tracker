@@ -9,7 +9,7 @@ import {
   Req,
   Put,
 } from '@nestjs/common';
-import { Response, Request } from 'express';
+import * as express from 'express';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { GoogleAuthDto, RefreshTokenDto, UpdateProfileDto } from './dto/auth.dto';
@@ -25,7 +25,7 @@ export class AuthController {
   @Post('google')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Login or Register with Google idToken' })
-  async googleAuth(@Body() dto: GoogleAuthDto, @Res({ passthrough: true }) res: Response) {
+  async googleAuth(@Body() dto: GoogleAuthDto, @Res({ passthrough: true }) res: express.Response) {
     const result = await this.authService.googleAuth(dto.idToken);
     
     // Set cookies
@@ -50,7 +50,7 @@ export class AuthController {
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Refresh access token' })
-  async refresh(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+  async refresh(@Req() req: express.Request, @Res({ passthrough: true }) res: express.Response) {
     const refreshToken = req.cookies['refreshToken'];
     if (!refreshToken) {
       return res.status(HttpStatus.UNAUTHORIZED).json({ message: 'No refresh token' });
@@ -79,7 +79,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Logout and clear cookies' })
-  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+  async logout(@Req() req: express.Request, @Res({ passthrough: true }) res: express.Response) {
     const refreshToken = req.cookies['refreshToken'];
     if (refreshToken) {
       await this.authService.logout(refreshToken);
