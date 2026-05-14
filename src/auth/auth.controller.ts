@@ -45,7 +45,11 @@ export class AuthController {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    return { user: result.user };
+    return { 
+      user: result.user,
+      accessToken: result.accessToken,
+      refreshToken: result.refreshToken
+    };
   }
 
   @Public()
@@ -76,7 +80,11 @@ export class AuthController {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    return { message: 'Tokens refreshed' };
+    return { 
+      message: 'Tokens refreshed',
+      accessToken: result.accessToken,
+      refreshToken: result.refreshToken
+    };
   }
 
   @Post('logout')

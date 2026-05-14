@@ -9,6 +9,15 @@ const api = axios.create({
   }
 });
 
+// Add a request interceptor to attach the JWT token
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('accessToken');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 export const authApi = {
   googleLogin: (idToken: string) => api.post('/auth/google', { idToken }).then(res => res.data),
   logout: () => api.post('/auth/logout').then(res => res.data),

@@ -40,6 +40,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (idToken: string) => {
     const data = await authApi.googleLogin(idToken);
+    if (data.accessToken) {
+      localStorage.setItem('accessToken', data.accessToken);
+    }
     setUser(data.user);
   };
 
@@ -49,6 +52,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (e) {
       console.error(e);
     }
+    localStorage.removeItem('accessToken');
     setUser(null);
   };
 
