@@ -21,7 +21,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     <>
       {children}
       <BottomNav />
-    </<>
+    </>
   );
 };
 
