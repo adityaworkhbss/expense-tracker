@@ -83,6 +83,12 @@ export class TransactionsController {
     return this.transactionsService.importTransactions(userId, transactions);
   }
 
+  @Get(':id')
+  @ApiOperation({ summary: 'Get a single transaction' })
+  findOne(@CurrentUser('id') userId: string, @Param('id') id: string) {
+    return this.transactionsService.findOne(userId, id);
+  }
+
   @Put(':id')
   @ApiOperation({ summary: 'Update a transaction' })
   update(@CurrentUser('id') userId: string, @Param('id') id: string, @Body() dto: UpdateTransactionDto) {

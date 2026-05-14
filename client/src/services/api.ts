@@ -22,7 +22,10 @@ export const analyticsApi = {
 
 export const transactionsApi = {
   getTransactions: (params?: any) => api.get('/transactions', { params }).then(res => res.data),
+  getTransaction: (id: string) => api.get(`/transactions/${id}`).then(res => res.data),
   createTransaction: (data: any) => api.post('/transactions', data).then(res => res.data),
+  updateTransaction: (id: string, data: any) => api.put(`/transactions/${id}`, data).then(res => res.data),
+  deleteTransaction: (id: string) => api.delete(`/transactions/${id}`).then(res => res.data),
 };
 
 export const categoriesApi = {

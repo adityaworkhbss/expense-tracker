@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowUpRight, ArrowDownLeft, Plus, X, AlertCircle, Check } from 'lucide-react';
+import { ArrowUpRight, ArrowDownLeft, Plus, X, AlertCircle, Check, Edit2, Trash2 } from 'lucide-react';
 import { transactionsApi, accountsApi, categoriesApi } from '../services/api';
 
 const Transactions = () => {
@@ -10,6 +10,7 @@ const Transactions = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [editingTxId, setEditingTxId] = useState<string | null>(null);
 
   // Form data for adding a transaction
   const [accounts, setAccounts] = useState<any[]>([]);
@@ -49,8 +50,14 @@ const Transactions = () => {
   };
 
   const openAddForm = async () => {
+    setEditingTxId(null);
     setShowAdd(true);
     setError('');
+    setNewTx({
+      type: 'EXPENSE', amount: '', accountId: '',
+      categoryId: '', merchant: '', note: '',
+      transactionDate: new Date().toISOString().split('T')[0],
+    });
     try {
       const [accs, cats] = await Promise.all([
         accountsApi.getAccounts(),
@@ -67,7 +74,33 @@ const Transactions = () => {
     }
   };
 
-  const handleAddTransaction = async (e: React.FormEvent) => {
+  const openEditForm = async (tx: any) => {
+    setEditingTxId(tx.id);
+    setShowAdd(true);
+    setError('');
+    try {
+      const [accs, cats] = await Promise.all([
+        accountsApi.getAccounts(),
+        categoriesApi.getCategories(),
+      ]);
+      const activeAccs = accs.filter((a: any) => a.isActive !== false);
+      setAccounts(activeAccs);
+      setCategories(cats);
+      setNewTx({
+        type: tx.type,
+        amount: String(tx.amount),
+        accountId: tx.accountId || '',
+        categoryId: tx.categoryId || '',
+        merchant: tx.merchant || '',
+        note: tx.note || '',
+        transactionDate: new Date(tx.transactionDate).toISOString().split('T')[0],
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleSaveTransaction = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     if (!newTx.amount || parseFloat(newTx.amount) <= 0) {
@@ -80,7 +113,7 @@ const Transactions = () => {
     }
     setSaving(true);
     try {
-      await transactionsApi.createTransaction({
+      const payload = {
         type: newTx.type,
         amount: parseFloat(newTx.amount),
         accountId: newTx.accountId,
@@ -88,20 +121,40 @@ const Transactions = () => {
         merchant: newTx.merchant || undefined,
         note: newTx.note || undefined,
         transactionDate: new Date(newTx.transactionDate).toISOString(),
-      });
+      };
+      
+      if (editingTxId) {
+        await transactionsApi.updateTransaction(editingTxId, payload);
+        setSuccess('Transaction updated!');
+      } else {
+        await transactionsApi.createTransaction(payload);
+        setSuccess('Transaction added!');
+      }
+      
       setShowAdd(false);
+      setEditingTxId(null);
       setNewTx({
         type: 'EXPENSE', amount: '', accountId: accounts[0]?.id || '',
         categoryId: '', merchant: '', note: '',
         transactionDate: new Date().toISOString().split('T')[0],
       });
-      setSuccess('Transaction added!');
       fetchTransactions();
     } catch (err: any) {
       const msg = err?.response?.data?.message;
-      setError(Array.isArray(msg) ? msg.join(', ') : msg || 'Failed to create transaction.');
+      setError(Array.isArray(msg) ? msg.join(', ') : msg || 'Failed to save transaction.');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleDeleteTransaction = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this transaction?')) return;
+    try {
+      await transactionsApi.deleteTransaction(id);
+      setSuccess('Transaction deleted!');
+      fetchTransactions();
+    } catch (err: any) {
+      setError('Failed to delete transaction.');
     }
   };
 
@@ -151,13 +204,13 @@ const Transactions = () => {
       {showAdd && (
         <div className="card animate-slide-up" style={{ marginBottom: '1.5rem' }}>
           <div className="flex-between" style={{ marginBottom: '1.25rem' }}>
-            <h3 className="font-semibold">Add Transaction</h3>
+            <h3 className="font-semibold">{editingTxId ? 'Edit Transaction' : 'Add Transaction'}</h3>
             <button className="btn-icon" style={{ width: '32px', height: '32px' }}
               onClick={() => { setShowAdd(false); setError(''); }}>
               <X size={16} />
             </button>
           </div>
-          <form onSubmit={handleAddTransaction}>
+          <form onSubmit={handleSaveTransaction}>
             {/* Type toggle */}
             <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
               {['EXPENSE', 'INCOME'].map(type => (
@@ -356,6 +409,14 @@ const Transactions = () => {
                     {t.type === 'EXPENSE' && t.account?.type === 'CREDIT_CARD' && (
                       <span className="text-[8px] bg-danger/10 text-danger px-1.5 py-0.5 rounded font-black uppercase mt-1 inline-block">Credit</span>
                     )}
+                    <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '0.75rem' }}>
+                      <button onClick={() => openEditForm(t)} className="text-secondary hover:text-primary transition-colors" title="Edit">
+                        <Edit2 size={16} />
+                      </button>
+                      <button onClick={() => handleDeleteTransaction(t.id)} className="text-secondary hover:text-danger transition-colors" title="Delete">
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </React.Fragment>
