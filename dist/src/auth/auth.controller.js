@@ -60,19 +60,24 @@ let AuthController = class AuthController {
     }
     async googleAuth(dto, res) {
         const result = await this.authService.googleAuth(dto.idToken);
+        const isProd = process.env.NODE_ENV === 'production';
         res.cookie('accessToken', result.accessToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
+            secure: isProd,
+            sameSite: isProd ? 'none' : 'lax',
             maxAge: 15 * 60 * 1000,
         });
         res.cookie('refreshToken', result.refreshToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
+            secure: isProd,
+            sameSite: isProd ? 'none' : 'lax',
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
-        return { user: result.user };
+        return {
+            user: result.user,
+            accessToken: result.accessToken,
+            refreshToken: result.refreshToken
+        };
     }
     async refresh(req, res) {
         const refreshToken = req.cookies['refreshToken'];
@@ -80,19 +85,24 @@ let AuthController = class AuthController {
             return res.status(common_1.HttpStatus.UNAUTHORIZED).json({ message: 'No refresh token' });
         }
         const result = await this.authService.refreshTokens(refreshToken);
+        const isProd = process.env.NODE_ENV === 'production';
         res.cookie('accessToken', result.accessToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            maxAge: 15 * 60 * 1000,
+            secure: isProd,
+            sameSite: isProd ? 'none' : 'lax',
+            maxAge: 24 * 60 * 60 * 1000 * 30,
         });
         res.cookie('refreshToken', result.refreshToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
+            secure: isProd,
+            sameSite: isProd ? 'none' : 'lax',
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
-        return { message: 'Tokens refreshed' };
+        return {
+            message: 'Tokens refreshed',
+            accessToken: result.accessToken,
+            refreshToken: result.refreshToken
+        };
     }
     async logout(req, res) {
         const refreshToken = req.cookies['refreshToken'];

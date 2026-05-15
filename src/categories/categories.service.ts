@@ -67,7 +67,7 @@ export class CategoriesService {
 
   async createMany(userId: string, dtos: CreateCategoryDto[]) {
     return this.prisma.$transaction(async (tx) => {
-      const createdCategories = [];
+      const createdCategories: any[] = [];
       for (const dto of dtos) {
         const category = await tx.category.create({
           data: {

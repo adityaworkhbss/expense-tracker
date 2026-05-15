@@ -7,6 +7,7 @@ export declare class CategoriesService {
     findAllFlat(userId: string): Promise<any>;
     findOne(userId: string, id: string): Promise<any>;
     create(userId: string, dto: CreateCategoryDto): Promise<any>;
+    createMany(userId: string, dtos: CreateCategoryDto[]): Promise<any>;
     update(userId: string, id: string, dto: UpdateCategoryDto): Promise<any>;
     remove(userId: string, id: string): Promise<any>;
 }

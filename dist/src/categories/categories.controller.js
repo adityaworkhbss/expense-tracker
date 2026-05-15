@@ -27,6 +27,9 @@ let CategoriesController = class CategoriesController {
         return this.categoriesService.findAll(userId);
     }
     create(userId, dto) {
+        if (Array.isArray(dto)) {
+            return this.categoriesService.createMany(userId, dto);
+        }
         return this.categoriesService.create(userId, dto);
     }
     update(userId, id, dto) {
@@ -47,11 +50,11 @@ __decorate([
 ], CategoriesController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Post)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Create a category' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Create category (single or bulk)' }),
     __param(0, (0, common_2.CurrentUser)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, category_dto_1.CreateCategoryDto]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", void 0)
 ], CategoriesController.prototype, "create", null);
 __decorate([

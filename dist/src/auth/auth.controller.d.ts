@@ -6,9 +6,13 @@ export declare class AuthController {
     constructor(authService: AuthService);
     googleAuth(dto: GoogleAuthDto, res: express.Response): Promise<{
         user: any;
+        accessToken: string;
+        refreshToken: string;
     }>;
     refresh(req: express.Request, res: express.Response): Promise<express.Response<any, Record<string, any>> | {
         message: string;
+        accessToken: string;
+        refreshToken: string;
     }>;
     logout(req: express.Request, res: express.Response): Promise<{
         message: string;

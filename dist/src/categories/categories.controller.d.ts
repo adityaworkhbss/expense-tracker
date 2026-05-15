@@ -4,7 +4,7 @@ export declare class CategoriesController {
     private readonly categoriesService;
     constructor(categoriesService: CategoriesService);
     findAll(userId: string): Promise<any>;
-    create(userId: string, dto: CreateCategoryDto): Promise<any>;
+    create(userId: string, dto: CreateCategoryDto | CreateCategoryDto[]): Promise<any>;
     update(userId: string, id: string, dto: UpdateCategoryDto): Promise<any>;
     remove(userId: string, id: string): Promise<any>;
 }
