@@ -25,11 +25,14 @@ export class CategoriesController {
   }
 
   @Post()
-  @ApiOperation({ summary: 'Create a category' })
+  @ApiOperation({ summary: 'Create category (single or bulk)' })
   create(
     @CurrentUser('id') userId: string,
-    @Body() dto: CreateCategoryDto,
+    @Body() dto: CreateCategoryDto | CreateCategoryDto[],
   ) {
+    if (Array.isArray(dto)) {
+      return this.categoriesService.createMany(userId, dto);
+    }
     return this.categoriesService.create(userId, dto);
   }
 

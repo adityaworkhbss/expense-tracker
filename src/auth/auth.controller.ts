@@ -70,7 +70,7 @@ export class AuthController {
       httpOnly: true,
       secure: isProd,
       sameSite: isProd ? 'none' : 'lax',
-      maxAge: 15 * 60 * 1000, // 15 minutes
+      maxAge: 24 * 60 * 60 * 1000 * 30, // 15 minutes
     });
     
     res.cookie('refreshToken', result.refreshToken, {

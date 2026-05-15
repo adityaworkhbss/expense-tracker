@@ -65,6 +65,36 @@ export class CategoriesService {
     return category;
   }
 
+  async createMany(userId: string, dtos: CreateCategoryDto[]) {
+    return this.prisma.$transaction(async (tx) => {
+      const createdCategories = [];
+      for (const dto of dtos) {
+        const category = await tx.category.create({
+          data: {
+            userId,
+            name: dto.name,
+            type: dto.type,
+            parentId: dto.parentId,
+            color: dto.color,
+            icon: dto.icon,
+          },
+        });
+        createdCategories.push(category);
+
+        await tx.auditLog.create({
+          data: {
+            userId,
+            action: 'CREATE',
+            entityType: 'Category',
+            entityId: category.id,
+            afterData: category as any,
+          },
+        });
+      }
+      return createdCategories;
+    });
+  }
+
   async update(userId: string, id: string, dto: UpdateCategoryDto) {
     const existing = await this.findOne(userId, id);
 
