@@ -7,13 +7,30 @@ export class EmisService {
   constructor(private prisma: PrismaService) {}
 
   async create(userId: string, dto: CreateEmiDto) {
+    const data = await this.prepareEmiData(userId, dto);
+    return this.prisma.emi.create({ data });
+  }
+
+  async createMany(userId: string, dtos: CreateEmiDto[]) {
+    return this.prisma.$transaction(async (tx) => {
+      const emis: any[] = [];
+      for (const dto of dtos) {
+        const data = await this.prepareEmiData(userId, dto);
+        const emi = await tx.emi.create({ data });
+        emis.push(emi);
+      }
+      return emis;
+    });
+  }
+
+  private async prepareEmiData(userId: string, dto: CreateEmiDto) {
     if (dto.accountId) {
       const account = await this.prisma.account.findUnique({
         where: { id: dto.accountId }
       });
 
       if (!account || account.userId !== userId) {
-        throw new BadRequestException('Invalid account ID');
+        throw new BadRequestException(`Invalid account ID: ${dto.accountId}`);
       }
     }
 
@@ -24,35 +41,31 @@ export class EmisService {
     
     const startDate = new Date(dto.startDate);
     
-    // Calculate endDate if not provided: startDate + tenure months
     const endDate = dto.endDate ? new Date(dto.endDate) : new Date(startDate);
     if (!dto.endDate && tenure > 0) {
       endDate.setMonth(endDate.getMonth() + tenure);
     }
 
-    // Calculate nextDueDate if not provided: startDate + monthsPaid + 1 month
     const nextDueDate = dto.nextDueDate ? new Date(dto.nextDueDate) : new Date(startDate);
     if (!dto.nextDueDate) {
       nextDueDate.setMonth(nextDueDate.getMonth() + monthsPaid + 1);
     }
 
-    return this.prisma.emi.create({
-      data: {
-        userId,
-        accountId: dto.accountId,
-        transactionId: dto.transactionId,
-        name: dto.name,
-        principal: principal,
-        tenure: tenure,
-        monthlyEmi: dto.monthlyEmi,
-        startDate: startDate,
-        endDate: tenure > 0 ? endDate : null,
-        nextDueDate: nextDueDate,
-        remainingBalance: remainingBalance,
-        monthsPaid: monthsPaid,
-        active: tenure > 0 ? monthsPaid < tenure : true,
-      },
-    });
+    return {
+      userId,
+      accountId: dto.accountId,
+      transactionId: dto.transactionId,
+      name: dto.name,
+      principal: principal,
+      tenure: tenure,
+      monthlyEmi: dto.monthlyEmi,
+      startDate: startDate,
+      endDate: tenure > 0 ? endDate : null,
+      nextDueDate: nextDueDate,
+      remainingBalance: remainingBalance,
+      monthsPaid: monthsPaid,
+      active: tenure > 0 ? monthsPaid < tenure : true,
+    };
   }
 
   async findAll(userId: string) {

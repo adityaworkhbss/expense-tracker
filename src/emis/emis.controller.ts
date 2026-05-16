@@ -12,9 +12,12 @@ export class EmisController {
   constructor(private readonly emisService: EmisService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Add a new EMI' })
-  create(@Request() req, @Body() createEmiDto: CreateEmiDto) {
-    return this.emisService.create(req.user.id, createEmiDto);
+  @ApiOperation({ summary: 'Add a new EMI (single or bulk)' })
+  create(@Request() req, @Body() dto: CreateEmiDto | CreateEmiDto[]) {
+    if (Array.isArray(dto)) {
+      return this.emisService.createMany(req.user.id, dto);
+    }
+    return this.emisService.create(req.user.id, dto);
   }
 
   @Get()
