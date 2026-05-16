@@ -23,6 +23,7 @@ export const authApi = {
   logout: () => api.post('/auth/logout').then(res => res.data),
   getMe: () => api.get('/auth/me').then(res => res.data),
   updateProfile: (data: any) => api.put('/auth/profile', data).then(res => res.data),
+  incrementOnboarding: () => api.post('/auth/onboarding/increment').then(res => res.data),
 };
 
 export const analyticsApi = {

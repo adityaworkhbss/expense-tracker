@@ -7,6 +7,7 @@ interface User {
   email: string;
   timezone: string;
   currency: string;
+  onboardingCount: number;
 }
 
 interface AuthContextType {
@@ -15,6 +16,7 @@ interface AuthContextType {
   login: (idToken: string) => Promise<void>;
   logout: () => Promise<void>;
   updateUser: (user: Partial<User>) => Promise<void>;
+  incrementOnboarding: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
@@ -66,8 +68,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const incrementOnboarding = async () => {
+    try {
+      const result = await authApi.incrementOnboarding();
+      if (user) {
+        setUser({ ...user, onboardingCount: result.onboardingCount });
+      }
+    } catch (e) {
+      console.error('Failed to increment onboarding count', e);
+      throw e;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, updateUser }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, updateUser, incrementOnboarding }}>
       {children}
     </AuthContext.Provider>
   );
