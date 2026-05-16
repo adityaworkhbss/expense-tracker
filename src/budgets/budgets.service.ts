@@ -44,7 +44,7 @@ export class BudgetsService {
 
     // Using transaction to ensure all are created or none
     return this.prisma.$transaction(async (tx) => {
-      const budgets = [];
+      const budgets: any[] = [];
       for (const item of data) {
         const b = await tx.budget.create({ data: item });
         budgets.push(b);
