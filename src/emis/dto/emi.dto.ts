@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsString, IsNotEmpty, IsNumber, IsOptional, Min, IsDateString } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateEmiDto {
   @ApiProperty({ example: 'Home Loan' })
@@ -19,24 +20,28 @@ export class CreateEmiDto {
 
   @ApiPropertyOptional({ example: 500000 })
   @IsNumber()
+  @Type(() => Number)
   @Min(0)
   @IsOptional()
   principal?: number;
 
   @ApiPropertyOptional({ example: 60, description: 'Tenure in months' })
   @IsNumber()
+  @Type(() => Number)
   @Min(1)
   @IsOptional()
   tenure?: number;
 
   @ApiPropertyOptional({ example: 10000, description: 'Monthly amount (alias for monthlyEmi)' })
   @IsNumber()
+  @Type(() => Number)
   @Min(0)
   @IsOptional()
   amount?: number;
 
   @ApiPropertyOptional({ example: 10000, description: 'Monthly EMI amount' })
   @IsNumber()
+  @Type(() => Number)
   @Min(0)
   @IsOptional()
   monthlyEmi?: number;
@@ -62,6 +67,7 @@ export class CreateEmiDto {
 
   @ApiPropertyOptional({ example: 5, description: 'Months already crossed' })
   @IsNumber()
+  @Type(() => Number)
   @IsOptional()
   monthsPaid?: number;
 }
@@ -74,12 +80,14 @@ export class UpdateEmiDto {
 
   @ApiPropertyOptional({ example: 10000, description: 'Monthly amount (alias for monthlyEmi)' })
   @IsNumber()
+  @Type(() => Number)
   @Min(0)
   @IsOptional()
   amount?: number;
 
   @ApiPropertyOptional({ example: 10000 })
   @IsNumber()
+  @Type(() => Number)
   @Min(0)
   @IsOptional()
   monthlyEmi?: number;

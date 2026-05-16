@@ -119,6 +119,9 @@ let AuthController = class AuthController {
     async updateProfile(userId, dto) {
         return this.authService.updateProfile(userId, dto);
     }
+    async incrementOnboardingCount(userId) {
+        return this.authService.incrementOnboardingCount(userId);
+    }
 };
 exports.AuthController = AuthController;
 __decorate([
@@ -173,6 +176,15 @@ __decorate([
     __metadata("design:paramtypes", [String, auth_dto_1.UpdateProfileDto]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "updateProfile", null);
+__decorate([
+    (0, common_1.Post)('onboarding/increment'),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Increment onboarding count by one' }),
+    __param(0, (0, common_2.CurrentUser)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "incrementOnboardingCount", null);
 exports.AuthController = AuthController = __decorate([
     (0, swagger_1.ApiTags)('Auth'),
     (0, common_1.Controller)('auth'),

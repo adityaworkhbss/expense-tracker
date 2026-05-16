@@ -31,9 +31,10 @@ let AccountsService = class AccountsService {
         return account;
     }
     async create(userId, dto) {
+        const targetUserId = dto.userId || userId;
         const account = await this.prisma.account.create({
             data: {
-                userId,
+                userId: targetUserId,
                 name: dto.name,
                 type: dto.type,
                 openingBalance: dto.openingBalance ?? 0,
@@ -42,7 +43,7 @@ let AccountsService = class AccountsService {
         });
         await this.prisma.auditLog.create({
             data: {
-                userId,
+                userId: targetUserId,
                 action: 'CREATE',
                 entityType: 'Account',
                 entityId: account.id,
@@ -50,6 +51,34 @@ let AccountsService = class AccountsService {
             },
         });
         return account;
+    }
+    async createMany(userId, dtos) {
+        return this.prisma.$transaction(async (tx) => {
+            const createdAccounts = [];
+            for (const dto of dtos) {
+                const targetUserId = dto.userId || userId;
+                const account = await tx.account.create({
+                    data: {
+                        userId: targetUserId,
+                        name: dto.name,
+                        type: dto.type,
+                        openingBalance: dto.openingBalance ?? 0,
+                        currentBalance: dto.openingBalance ?? 0,
+                    },
+                });
+                createdAccounts.push(account);
+                await tx.auditLog.create({
+                    data: {
+                        userId: targetUserId,
+                        action: 'CREATE',
+                        entityType: 'Account',
+                        entityId: account.id,
+                        afterData: account,
+                    },
+                });
+            }
+            return createdAccounts;
+        });
     }
     async update(userId, id, dto) {
         const existing = await this.findOne(userId, id);

@@ -18,27 +18,61 @@ let EmisService = class EmisService {
         this.prisma = prisma;
     }
     async create(userId, dto) {
-        const account = await this.prisma.account.findUnique({
-            where: { id: dto.accountId }
+        const data = await this.prepareEmiData(userId, dto);
+        return this.prisma.emi.create({ data });
+    }
+    async createMany(userId, dtos) {
+        return this.prisma.$transaction(async (tx) => {
+            const emis = [];
+            for (const dto of dtos) {
+                const data = await this.prepareEmiData(userId, dto);
+                const emi = await tx.emi.create({ data });
+                emis.push(emi);
+            }
+            return emis;
         });
-        if (!account || account.userId !== userId) {
-            throw new common_1.BadRequestException('Invalid account ID');
+    }
+    async prepareEmiData(userId, dto) {
+        if (dto.accountId) {
+            const account = await this.prisma.account.findUnique({
+                where: { id: dto.accountId }
+            });
+            if (!account || account.userId !== userId) {
+                throw new common_1.BadRequestException(`Invalid account ID: ${dto.accountId}`);
+            }
         }
-        return this.prisma.emi.create({
-            data: {
-                userId,
-                accountId: dto.accountId,
-                transactionId: dto.transactionId,
-                name: dto.name,
-                principal: dto.principal,
-                tenure: dto.tenure,
-                monthlyEmi: dto.monthlyEmi,
-                startDate: new Date(dto.startDate),
-                nextDueDate: new Date(dto.nextDueDate),
-                remainingBalance: dto.principal,
-                active: true,
-            },
-        });
+        const monthlyEmi = Number(dto.monthlyEmi ?? dto.amount ?? 0);
+        const monthsPaid = Number(dto.monthsPaid ?? 0);
+        let tenure = Number(dto.tenure ?? 0);
+        if (!dto.tenure && dto.principal && monthlyEmi > 0) {
+            tenure = Math.ceil(Number(dto.principal) / monthlyEmi);
+        }
+        const principal = Number(dto.principal ?? (monthlyEmi * tenure));
+        const remainingBalance = Math.max(0, principal - (monthsPaid * monthlyEmi));
+        const startDate = new Date(dto.startDate);
+        const endDate = dto.endDate ? new Date(dto.endDate) : new Date(startDate);
+        if (!dto.endDate && tenure > 0) {
+            endDate.setMonth(endDate.getMonth() + tenure);
+        }
+        const nextDueDate = dto.nextDueDate ? new Date(dto.nextDueDate) : new Date(startDate);
+        if (!dto.nextDueDate) {
+            nextDueDate.setMonth(nextDueDate.getMonth() + monthsPaid + 1);
+        }
+        return {
+            userId,
+            accountId: dto.accountId,
+            transactionId: dto.transactionId,
+            name: dto.name,
+            principal: principal || 0,
+            tenure: tenure || 0,
+            monthlyEmi: monthlyEmi,
+            startDate: startDate,
+            endDate: tenure > 0 ? endDate : null,
+            nextDueDate: nextDueDate,
+            remainingBalance: remainingBalance || 0,
+            monthsPaid: monthsPaid,
+            active: tenure > 0 ? monthsPaid < tenure : true,
+        };
     }
     async findAll(userId) {
         const emis = await this.prisma.emi.findMany({
@@ -87,6 +121,10 @@ let EmisService = class EmisService {
     async update(userId, id, dto) {
         const emi = await this.findOne(userId, id);
         const updateData = { ...dto };
+        if (dto.amount && !dto.monthlyEmi) {
+            updateData.monthlyEmi = dto.amount;
+        }
+        delete updateData.amount;
         if (dto.nextDueDate) {
             updateData.nextDueDate = new Date(dto.nextDueDate);
         }

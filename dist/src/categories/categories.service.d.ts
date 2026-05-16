@@ -3,7 +3,7 @@ import { CreateCategoryDto, UpdateCategoryDto } from './dto/category.dto';
 export declare class CategoriesService {
     private readonly prisma;
     constructor(prisma: PrismaService);
-    findAll(userId: string): Promise<any>;
+    findAll(userId: string): Promise<any[]>;
     findAllFlat(userId: string): Promise<any>;
     findOne(userId: string, id: string): Promise<any>;
     create(userId: string, dto: CreateCategoryDto): Promise<any>;

@@ -22,6 +22,7 @@ class CreateAccountDto {
     name;
     type;
     openingBalance;
+    userId;
 }
 exports.CreateAccountDto = CreateAccountDto;
 __decorate([
@@ -31,7 +32,7 @@ __decorate([
     __metadata("design:type", String)
 ], CreateAccountDto.prototype, "name", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ enum: AccountTypeEnum, example: 'BANK' }),
+    (0, swagger_1.ApiProperty)({ enum: AccountTypeEnum, example: 'PAY_NOW' }),
     (0, class_validator_1.IsEnum)(AccountTypeEnum),
     __metadata("design:type", String)
 ], CreateAccountDto.prototype, "type", void 0);
@@ -42,6 +43,12 @@ __decorate([
     (0, class_validator_1.IsNumber)({ maxDecimalPlaces: 2 }),
     __metadata("design:type", Number)
 ], CreateAccountDto.prototype, "openingBalance", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: 'user-uuid' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateAccountDto.prototype, "userId", void 0);
 class UpdateAccountDto {
     name;
     type;

@@ -5,6 +5,7 @@ export declare class BudgetsService {
     constructor(prisma: PrismaService);
     findAll(userId: string): Promise<any>;
     create(userId: string, dto: CreateBudgetDto): Promise<any>;
+    createMany(userId: string, dtos: CreateBudgetDto[]): Promise<any>;
     update(userId: string, id: string, dto: UpdateBudgetDto): Promise<any>;
     remove(userId: string, id: string): Promise<{
         message: string;

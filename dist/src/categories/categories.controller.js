@@ -23,7 +23,8 @@ let CategoriesController = class CategoriesController {
     constructor(categoriesService) {
         this.categoriesService = categoriesService;
     }
-    findAll(userId) {
+    findAll(currentUserId, queryUserId) {
+        const userId = queryUserId || currentUserId;
         return this.categoriesService.findAll(userId);
     }
     create(userId, dto) {
@@ -43,9 +44,11 @@ exports.CategoriesController = CategoriesController;
 __decorate([
     (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({ summary: 'List all categories (tree structure)' }),
+    (0, swagger_1.ApiQuery)({ name: 'user_id', required: false, description: 'User ID to filter categories' }),
     __param(0, (0, common_2.CurrentUser)('id')),
+    __param(1, (0, common_1.Query)('user_id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], CategoriesController.prototype, "findAll", null);
 __decorate([

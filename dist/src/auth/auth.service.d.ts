@@ -27,5 +27,6 @@ export declare class AuthService {
         currency?: string;
     }): Promise<any>;
     validateUser(payload: JwtPayload): Promise<any>;
+    incrementOnboardingCount(userId: string): Promise<any>;
     private generateTokens;
 }

@@ -19,4 +19,5 @@ export declare class AuthController {
     }>;
     me(userId: string): Promise<any>;
     updateProfile(userId: string, dto: UpdateProfileDto): Promise<any>;
+    incrementOnboardingCount(userId: string): Promise<any>;
 }

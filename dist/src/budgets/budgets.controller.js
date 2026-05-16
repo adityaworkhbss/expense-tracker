@@ -30,6 +30,9 @@ let BudgetsController = class BudgetsController {
         return this.budgetsService.getStatus(userId);
     }
     create(userId, dto) {
+        if (Array.isArray(dto)) {
+            return this.budgetsService.createMany(userId, dto);
+        }
         return this.budgetsService.create(userId, dto);
     }
     update(userId, id, dto) {
@@ -58,11 +61,11 @@ __decorate([
 ], BudgetsController.prototype, "getStatus", null);
 __decorate([
     (0, common_1.Post)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Create a budget' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Create budget (single or bulk)' }),
     __param(0, (0, common_2.CurrentUser)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, budget_dto_1.CreateBudgetDto]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", void 0)
 ], BudgetsController.prototype, "create", null);
 __decorate([
@@ -87,7 +90,7 @@ __decorate([
 exports.BudgetsController = BudgetsController = __decorate([
     (0, swagger_1.ApiTags)('Budgets'),
     (0, swagger_1.ApiBearerAuth)(),
-    (0, common_1.Controller)('budgets'),
+    (0, common_1.Controller)(['budgets', 'budget']),
     __metadata("design:paramtypes", [budgets_service_1.BudgetsService])
 ], BudgetsController);
 //# sourceMappingURL=budgets.controller.js.map

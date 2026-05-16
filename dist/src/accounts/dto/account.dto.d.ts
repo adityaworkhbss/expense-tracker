@@ -6,6 +6,7 @@ export declare class CreateAccountDto {
     name: string;
     type: AccountTypeEnum;
     openingBalance?: number;
+    userId?: string;
 }
 export declare class UpdateAccountDto {
     name?: string;

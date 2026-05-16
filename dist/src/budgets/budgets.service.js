@@ -41,6 +41,27 @@ let BudgetsService = class BudgetsService {
         });
         return budget;
     }
+    async createMany(userId, dtos) {
+        const data = dtos.map((dto) => ({
+            userId,
+            categoryId: dto.categoryId,
+            periodType: dto.periodType,
+            limitAmount: dto.limitAmount,
+            startDate: new Date(dto.startDate),
+            endDate: dto.endDate ? new Date(dto.endDate) : null,
+        }));
+        return this.prisma.$transaction(async (tx) => {
+            const budgets = [];
+            for (const item of data) {
+                const b = await tx.budget.create({ data: item });
+                budgets.push(b);
+                await tx.auditLog.create({
+                    data: { userId, action: 'CREATE', entityType: 'Budget', entityId: b.id, afterData: b },
+                });
+            }
+            return budgets;
+        });
+    }
     async update(userId, id, dto) {
         const existing = await this.prisma.budget.findUnique({ where: { id } });
         if (!existing || existing.userId !== userId)

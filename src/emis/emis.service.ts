@@ -38,13 +38,13 @@ export class EmisService {
     const monthsPaid = Number(dto.monthsPaid ?? 0);
     
     // Calculate tenure if not provided
-    let tenure = dto.tenure ?? 0;
+    let tenure = Number(dto.tenure ?? 0);
     if (!dto.tenure && dto.principal && monthlyEmi > 0) {
       tenure = Math.ceil(Number(dto.principal) / monthlyEmi);
     }
 
     // Calculate principal if not provided
-    const principal = dto.principal ?? (monthlyEmi * tenure);
+    const principal = Number(dto.principal ?? (monthlyEmi * tenure));
     
     // Calculate remaining balance
     const remainingBalance = Math.max(0, principal - (monthsPaid * monthlyEmi));

@@ -18,17 +18,29 @@ let CategoriesService = class CategoriesService {
         this.prisma = prisma;
     }
     async findAll(userId) {
+        if (!userId)
+            return [];
         const categories = await this.prisma.category.findMany({
             where: { userId },
-            include: {
-                children: {
-                    where: { isActive: true },
-                    orderBy: { name: 'asc' },
-                },
-            },
             orderBy: { name: 'asc' },
         });
-        return categories.filter((c) => !c.parentId);
+        const categoryMap = new Map();
+        const roots = [];
+        categories.forEach((cat) => {
+            cat.children = [];
+            categoryMap.set(cat.id, cat);
+        });
+        categories.forEach((cat) => {
+            if (cat.parentId && categoryMap.has(cat.parentId)) {
+                if (cat.isActive) {
+                    categoryMap.get(cat.parentId).children.push(cat);
+                }
+            }
+            else if (!cat.parentId) {
+                roots.push(cat);
+            }
+        });
+        return roots;
     }
     async findAllFlat(userId) {
         return this.prisma.category.findMany({

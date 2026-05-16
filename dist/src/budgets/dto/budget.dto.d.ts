@@ -5,14 +5,14 @@ export declare enum BudgetPeriodEnum {
     CUSTOM = "CUSTOM"
 }
 export declare class CreateBudgetDto {
-    categoryId?: string;
+    categoryId?: string | null;
     periodType: BudgetPeriodEnum;
     limitAmount: number;
     startDate: string;
     endDate?: string;
 }
 export declare class UpdateBudgetDto {
-    categoryId?: string;
+    categoryId?: string | null;
     periodType?: BudgetPeriodEnum;
     limitAmount?: number;
     startDate?: string;

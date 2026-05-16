@@ -29,10 +29,10 @@ class CreateBudgetDto {
 }
 exports.CreateBudgetDto = CreateBudgetDto;
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: 'Category ID (null = overall budget)' }),
+    (0, swagger_1.ApiPropertyOptional)({ description: 'Category ID (null = overall budget)', nullable: true }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
+    __metadata("design:type", Object)
 ], CreateBudgetDto.prototype, "categoryId", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ enum: BudgetPeriodEnum }),
@@ -65,10 +65,10 @@ class UpdateBudgetDto {
 }
 exports.UpdateBudgetDto = UpdateBudgetDto;
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)(),
+    (0, swagger_1.ApiPropertyOptional)({ nullable: true }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
+    __metadata("design:type", Object)
 ], UpdateBudgetDto.prototype, "categoryId", void 0);
 __decorate([
     (0, swagger_1.ApiPropertyOptional)({ enum: BudgetPeriodEnum }),

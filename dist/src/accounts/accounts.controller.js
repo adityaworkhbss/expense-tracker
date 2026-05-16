@@ -27,6 +27,9 @@ let AccountsController = class AccountsController {
         return this.accountsService.findAll(userId);
     }
     create(userId, dto) {
+        if (Array.isArray(dto)) {
+            return this.accountsService.createMany(userId, dto);
+        }
         return this.accountsService.create(userId, dto);
     }
     update(userId, id, dto) {
@@ -47,11 +50,11 @@ __decorate([
 ], AccountsController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Post)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Create a new account' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Create account (single or bulk)' }),
     __param(0, (0, common_2.CurrentUser)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, account_dto_1.CreateAccountDto]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", void 0)
 ], AccountsController.prototype, "create", null);
 __decorate([

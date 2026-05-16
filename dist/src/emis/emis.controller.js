@@ -23,8 +23,11 @@ let EmisController = class EmisController {
     constructor(emisService) {
         this.emisService = emisService;
     }
-    create(req, createEmiDto) {
-        return this.emisService.create(req.user.id, createEmiDto);
+    create(req, dto) {
+        if (Array.isArray(dto)) {
+            return this.emisService.createMany(req.user.id, dto);
+        }
+        return this.emisService.create(req.user.id, dto);
     }
     findAll(req) {
         return this.emisService.findAll(req.user.id);
@@ -42,11 +45,11 @@ let EmisController = class EmisController {
 exports.EmisController = EmisController;
 __decorate([
     (0, common_1.Post)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Add a new EMI' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Add a new EMI (single or bulk)' }),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, emi_dto_1.CreateEmiDto]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", void 0)
 ], EmisController.prototype, "create", null);
 __decorate([
