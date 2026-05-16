@@ -14,8 +14,8 @@ export class CategoriesService {
       orderBy: { name: 'asc' },
     });
 
-    const categoryMap = new Map();
-    const roots = [];
+    const categoryMap = new Map<string, any>();
+    const roots: any[] = [];
 
     // First pass: create map and initialize children
     categories.forEach((cat) => {
