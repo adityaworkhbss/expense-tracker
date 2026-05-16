@@ -34,10 +34,20 @@ export class EmisService {
       }
     }
 
-    const monthsPaid = dto.monthsPaid ?? 0;
-    const tenure = dto.tenure ?? (dto.principal ? Math.ceil(Number(dto.principal) / Number(dto.monthlyEmi)) : 0);
-    const principal = dto.principal ?? (Number(dto.monthlyEmi) * tenure);
-    const remainingBalance = Math.max(0, principal - (monthsPaid * Number(dto.monthlyEmi)));
+    const monthlyEmi = Number(dto.monthlyEmi ?? dto.amount ?? 0);
+    const monthsPaid = Number(dto.monthsPaid ?? 0);
+    
+    // Calculate tenure if not provided
+    let tenure = dto.tenure ?? 0;
+    if (!dto.tenure && dto.principal && monthlyEmi > 0) {
+      tenure = Math.ceil(Number(dto.principal) / monthlyEmi);
+    }
+
+    // Calculate principal if not provided
+    const principal = dto.principal ?? (monthlyEmi * tenure);
+    
+    // Calculate remaining balance
+    const remainingBalance = Math.max(0, principal - (monthsPaid * monthlyEmi));
     
     const startDate = new Date(dto.startDate);
     
@@ -56,13 +66,13 @@ export class EmisService {
       accountId: dto.accountId,
       transactionId: dto.transactionId,
       name: dto.name,
-      principal: principal,
-      tenure: tenure,
-      monthlyEmi: dto.monthlyEmi,
+      principal: principal || 0,
+      tenure: tenure || 0,
+      monthlyEmi: monthlyEmi,
       startDate: startDate,
       endDate: tenure > 0 ? endDate : null,
       nextDueDate: nextDueDate,
-      remainingBalance: remainingBalance,
+      remainingBalance: remainingBalance || 0,
       monthsPaid: monthsPaid,
       active: tenure > 0 ? monthsPaid < tenure : true,
     };
@@ -126,6 +136,11 @@ export class EmisService {
     const emi = await this.findOne(userId, id);
 
     const updateData: any = { ...dto };
+    if (dto.amount && !dto.monthlyEmi) {
+      updateData.monthlyEmi = dto.amount;
+    }
+    delete updateData.amount; // Remove alias before saving to DB
+
     if (dto.nextDueDate) {
       updateData.nextDueDate = new Date(dto.nextDueDate);
     }

@@ -29,10 +29,22 @@ export class CreateEmiDto {
   @IsOptional()
   tenure?: number;
 
-  @ApiProperty({ example: 10000, description: 'Monthly EMI amount' })
+  @ApiPropertyOptional({ example: 10000, description: 'Monthly amount (alias for monthlyEmi)' })
   @IsNumber()
   @Min(0)
-  monthlyEmi: number;
+  @IsOptional()
+  amount?: number;
+
+  @ApiPropertyOptional({ example: 10000, description: 'Monthly EMI amount' })
+  @IsNumber()
+  @Min(0)
+  @IsOptional()
+  monthlyEmi?: number;
+
+  @ApiPropertyOptional({ example: 'emi' })
+  @IsString()
+  @IsOptional()
+  type?: string;
 
   @ApiProperty({ example: '2024-01-05' })
   @IsDateString()
@@ -59,6 +71,12 @@ export class UpdateEmiDto {
   @IsString()
   @IsOptional()
   name?: string;
+
+  @ApiPropertyOptional({ example: 10000, description: 'Monthly amount (alias for monthlyEmi)' })
+  @IsNumber()
+  @Min(0)
+  @IsOptional()
+  amount?: number;
 
   @ApiPropertyOptional({ example: 10000 })
   @IsNumber()
