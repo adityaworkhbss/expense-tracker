@@ -6,8 +6,9 @@ import {
   Delete,
   Body,
   Param,
+  Query,
 } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto/category.dto';
 import { CurrentUser } from '../common';
@@ -20,7 +21,12 @@ export class CategoriesController {
 
   @Get()
   @ApiOperation({ summary: 'List all categories (tree structure)' })
-  findAll(@CurrentUser('id') userId: string) {
+  @ApiQuery({ name: 'user_id', required: false, description: 'User ID to filter categories' })
+  findAll(
+    @CurrentUser('id') currentUserId: string,
+    @Query('user_id') queryUserId?: string,
+  ) {
+    const userId = queryUserId || currentUserId;
     return this.categoriesService.findAll(userId);
   }
 
