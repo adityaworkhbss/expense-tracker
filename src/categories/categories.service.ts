@@ -7,20 +7,35 @@ export class CategoriesService {
   constructor(private readonly prisma: PrismaService) {}
 
   async findAll(userId: string) {
-    return this.prisma.category.findMany({
-      where: {
-        userId,
-        parentId: null,
-        isActive: true,
-      },
-      include: {
-        children: {
-          where: { isActive: true },
-          orderBy: { name: 'asc' },
-        },
-      },
+    if (!userId) return [];
+
+    const categories = await this.prisma.category.findMany({
+      where: { userId },
       orderBy: { name: 'asc' },
     });
+
+    const categoryMap = new Map();
+    const roots = [];
+
+    // First pass: create map and initialize children
+    categories.forEach((cat) => {
+      (cat as any).children = [];
+      categoryMap.set(cat.id, cat);
+    });
+
+    // Second pass: build tree
+    categories.forEach((cat) => {
+      if (cat.parentId && categoryMap.has(cat.parentId)) {
+        // Only include active children (matching original behavior)
+        if (cat.isActive) {
+          categoryMap.get(cat.parentId).children.push(cat);
+        }
+      } else if (!cat.parentId) {
+        roots.push(cat);
+      }
+    });
+
+    return roots;
   }
 
   async findAllFlat(userId: string) {
