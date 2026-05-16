@@ -18,7 +18,22 @@ export class EmisService {
     }
 
     const monthsPaid = dto.monthsPaid ?? 0;
-    const remainingBalance = Math.max(0, Number(dto.principal) - (monthsPaid * Number(dto.monthlyEmi)));
+    const principal = dto.principal ?? (Number(dto.monthlyEmi) * dto.tenure);
+    const remainingBalance = Math.max(0, principal - (monthsPaid * Number(dto.monthlyEmi)));
+    
+    const startDate = new Date(dto.startDate);
+    
+    // Calculate endDate if not provided: startDate + tenure months
+    const endDate = dto.endDate ? new Date(dto.endDate) : new Date(startDate);
+    if (!dto.endDate) {
+      endDate.setMonth(endDate.getMonth() + dto.tenure);
+    }
+
+    // Calculate nextDueDate if not provided: startDate + monthsPaid + 1 month
+    const nextDueDate = dto.nextDueDate ? new Date(dto.nextDueDate) : new Date(startDate);
+    if (!dto.nextDueDate) {
+      nextDueDate.setMonth(nextDueDate.getMonth() + monthsPaid + 1);
+    }
 
     return this.prisma.emi.create({
       data: {
@@ -26,11 +41,12 @@ export class EmisService {
         accountId: dto.accountId,
         transactionId: dto.transactionId,
         name: dto.name,
-        principal: dto.principal,
+        principal: principal,
         tenure: dto.tenure,
         monthlyEmi: dto.monthlyEmi,
-        startDate: new Date(dto.startDate),
-        nextDueDate: new Date(dto.nextDueDate),
+        startDate: startDate,
+        endDate: endDate,
+        nextDueDate: nextDueDate,
         remainingBalance: remainingBalance,
         monthsPaid: monthsPaid,
         active: monthsPaid < dto.tenure,

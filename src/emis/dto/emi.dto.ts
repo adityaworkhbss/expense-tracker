@@ -12,15 +12,16 @@ export class CreateEmiDto {
   @IsOptional()
   accountId?: string;
 
-  @ApiPropertyOptional({ example: 'transaction-uuid', description: 'Original transaction if any' })
+  @ApiPropertyOptional({ example: 'transaction-uuid' })
   @IsString()
   @IsOptional()
   transactionId?: string;
 
-  @ApiProperty({ example: 500000 })
+  @ApiPropertyOptional({ example: 500000 })
   @IsNumber()
   @Min(0)
-  principal: number;
+  @IsOptional()
+  principal?: number;
 
   @ApiProperty({ example: 60, description: 'Tenure in months' })
   @IsNumber()
@@ -36,9 +37,15 @@ export class CreateEmiDto {
   @IsDateString()
   startDate: string;
 
-  @ApiProperty({ example: '2024-06-05' })
+  @ApiPropertyOptional({ example: '2029-01-05' })
   @IsDateString()
-  nextDueDate: string;
+  @IsOptional()
+  endDate?: string;
+
+  @ApiPropertyOptional({ example: '2024-06-05' })
+  @IsDateString()
+  @IsOptional()
+  nextDueDate?: string;
 
   @ApiPropertyOptional({ example: 5, description: 'Months already crossed' })
   @IsNumber()

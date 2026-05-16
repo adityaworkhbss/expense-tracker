@@ -247,12 +247,13 @@ model Emi {
   accountId        String?      @map("account_id")
   transactionId    String?      @unique @map("transaction_id")
   name             String
-  principal        Decimal      @db.Decimal(15, 2)
+  principal        Decimal?     @db.Decimal(15, 2)
   tenure           Int
   monthlyEmi       Decimal      @map("monthly_emi") @db.Decimal(15, 2)
   startDate        DateTime?    @map("start_date") @db.Date
-  nextDueDate      DateTime     @map("next_due_date") @db.Date
-  remainingBalance Decimal      @map("remaining_balance") @db.Decimal(15, 2)
+  endDate          DateTime?    @map("end_date") @db.Date
+  nextDueDate      DateTime?    @map("next_due_date") @db.Date
+  remainingBalance Decimal?     @map("remaining_balance") @db.Decimal(15, 2)
   monthsPaid       Int          @default(0) @map("months_paid")
   active           Boolean      @default(true)
   createdAt        DateTime     @default(now()) @map("created_at")
