@@ -7,8 +7,12 @@ export class CategoriesService {
   constructor(private readonly prisma: PrismaService) {}
 
   async findAll(userId: string) {
-    const categories = await this.prisma.category.findMany({
-      where: { userId },
+    return this.prisma.category.findMany({
+      where: {
+        userId,
+        parentId: null,
+        isActive: true,
+      },
       include: {
         children: {
           where: { isActive: true },
@@ -17,9 +21,6 @@ export class CategoriesService {
       },
       orderBy: { name: 'asc' },
     });
-
-    // Return tree structure: only top-level categories with their children
-    return categories.filter((c) => !c.parentId);
   }
 
   async findAllFlat(userId: string) {
