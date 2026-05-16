@@ -10,10 +10,10 @@ export enum BudgetPeriodEnum {
 }
 
 export class CreateBudgetDto {
-  @ApiPropertyOptional({ description: 'Category ID (null = overall budget)' })
+  @ApiPropertyOptional({ description: 'Category ID (null = overall budget)', nullable: true })
   @IsOptional()
   @IsString()
-  categoryId?: string;
+  categoryId?: string | null;
 
   @ApiProperty({ enum: BudgetPeriodEnum })
   @IsEnum(BudgetPeriodEnum)
@@ -35,7 +35,7 @@ export class CreateBudgetDto {
 }
 
 export class UpdateBudgetDto {
-  @ApiPropertyOptional() @IsOptional() @IsString() categoryId?: string;
+  @ApiPropertyOptional({ nullable: true }) @IsOptional() @IsString() categoryId?: string | null;
   @ApiPropertyOptional({ enum: BudgetPeriodEnum }) @IsOptional() @IsEnum(BudgetPeriodEnum) periodType?: BudgetPeriodEnum;
   @ApiPropertyOptional() @IsOptional() @Type(() => Number) @IsNumber({ maxDecimalPlaces: 2 }) limitAmount?: number;
   @ApiPropertyOptional() @IsOptional() @IsDateString() startDate?: string;

@@ -6,7 +6,7 @@ import { CurrentUser } from '../common';
 
 @ApiTags('Budgets')
 @ApiBearerAuth()
-@Controller('budgets')
+@Controller(['budgets', 'budget'])
 export class BudgetsController {
   constructor(private readonly budgetsService: BudgetsService) {}
 
@@ -23,8 +23,11 @@ export class BudgetsController {
   }
 
   @Post()
-  @ApiOperation({ summary: 'Create a budget' })
-  create(@CurrentUser('id') userId: string, @Body() dto: CreateBudgetDto) {
+  @ApiOperation({ summary: 'Create budget (single or bulk)' })
+  create(@CurrentUser('id') userId: string, @Body() dto: CreateBudgetDto | CreateBudgetDto[]) {
+    if (Array.isArray(dto)) {
+      return this.budgetsService.createMany(userId, dto);
+    }
     return this.budgetsService.create(userId, dto);
   }
 

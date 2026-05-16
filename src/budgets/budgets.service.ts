@@ -32,6 +32,30 @@ export class BudgetsService {
     return budget;
   }
 
+  async createMany(userId: string, dtos: CreateBudgetDto[]) {
+    const data = dtos.map((dto) => ({
+      userId,
+      categoryId: dto.categoryId,
+      periodType: dto.periodType,
+      limitAmount: dto.limitAmount,
+      startDate: new Date(dto.startDate),
+      endDate: dto.endDate ? new Date(dto.endDate) : null,
+    }));
+
+    // Using transaction to ensure all are created or none
+    return this.prisma.$transaction(async (tx) => {
+      const budgets = [];
+      for (const item of data) {
+        const b = await tx.budget.create({ data: item });
+        budgets.push(b);
+        await tx.auditLog.create({
+          data: { userId, action: 'CREATE', entityType: 'Budget', entityId: b.id, afterData: b as any },
+        });
+      }
+      return budgets;
+    });
+  }
+
   async update(userId: string, id: string, dto: UpdateBudgetDto) {
     const existing = await this.prisma.budget.findUnique({ where: { id } });
     if (!existing || existing.userId !== userId) throw new NotFoundException('Budget not found');
