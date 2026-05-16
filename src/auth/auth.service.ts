@@ -91,6 +91,7 @@ export class AuthService {
         email: user.email,
         timezone: user.timezone,
         currency: user.currency,
+        onboardingCount: user.onboardingCount,
       },
     };
   }
@@ -130,6 +131,7 @@ export class AuthService {
         email: true,
         timezone: true,
         currency: true,
+        onboardingCount: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -152,6 +154,7 @@ export class AuthService {
         email: true,
         timezone: true,
         currency: true,
+        onboardingCount: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -161,12 +164,27 @@ export class AuthService {
   async validateUser(payload: JwtPayload) {
     const user = await this.prisma.user.findUnique({
       where: { id: payload.sub },
-      select: { id: true, email: true, name: true, timezone: true, currency: true },
+      select: { id: true, email: true, name: true, timezone: true, currency: true, onboardingCount: true },
     });
     if (!user) {
       throw new UnauthorizedException();
     }
     return user;
+  }
+
+  async incrementOnboardingCount(userId: string) {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        onboardingCount: {
+          increment: 1,
+        },
+      },
+      select: {
+        id: true,
+        onboardingCount: true,
+      },
+    });
   }
 
   private async generateTokens(

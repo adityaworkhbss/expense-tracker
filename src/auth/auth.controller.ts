@@ -119,4 +119,11 @@ export class AuthController {
   ) {
     return this.authService.updateProfile(userId, dto);
   }
+
+  @Post('onboarding/increment')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Increment onboarding count by one' })
+  async incrementOnboardingCount(@CurrentUser('id') userId: string) {
+    return this.authService.incrementOnboardingCount(userId);
+  }
 }

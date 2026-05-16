@@ -15,6 +15,7 @@ model User {
   passwordHash          String                 @map("password_hash")
   timezone              String                 @default("Asia/Kolkata")
   currency              String                 @default("INR")
+  onboardingCount       Int                    @default(0) @map("onboarding_count")
   createdAt             DateTime               @default(now()) @map("created_at")
   updatedAt             DateTime               @updatedAt @map("updated_at")
   accounts              Account[]
