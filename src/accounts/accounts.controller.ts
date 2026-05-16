@@ -25,11 +25,14 @@ export class AccountsController {
   }
 
   @Post()
-  @ApiOperation({ summary: 'Create a new account' })
+  @ApiOperation({ summary: 'Create account (single or bulk)' })
   create(
     @CurrentUser('id') userId: string,
-    @Body() dto: CreateAccountDto,
+    @Body() dto: CreateAccountDto | CreateAccountDto[],
   ) {
+    if (Array.isArray(dto)) {
+      return this.accountsService.createMany(userId, dto);
+    }
     return this.accountsService.create(userId, dto);
   }
 

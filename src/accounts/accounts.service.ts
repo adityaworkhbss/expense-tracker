@@ -49,6 +49,35 @@ export class AccountsService {
     return account;
   }
 
+  async createMany(userId: string, dtos: CreateAccountDto[]) {
+    return this.prisma.$transaction(async (tx) => {
+      const createdAccounts: any[] = [];
+      for (const dto of dtos) {
+        const account = await tx.account.create({
+          data: {
+            userId,
+            name: dto.name,
+            type: dto.type,
+            openingBalance: dto.openingBalance ?? 0,
+            currentBalance: dto.openingBalance ?? 0,
+          },
+        });
+        createdAccounts.push(account);
+
+        await tx.auditLog.create({
+          data: {
+            userId,
+            action: 'CREATE',
+            entityType: 'Account',
+            entityId: account.id,
+            afterData: account as any,
+          },
+        });
+      }
+      return createdAccounts;
+    });
+  }
+
   async update(userId: string, id: string, dto: UpdateAccountDto) {
     const existing = await this.findOne(userId, id);
 

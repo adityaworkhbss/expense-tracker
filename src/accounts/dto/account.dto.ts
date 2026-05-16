@@ -20,7 +20,7 @@ export class CreateAccountDto {
   @IsNotEmpty()
   name: string;
 
-  @ApiProperty({ enum: AccountTypeEnum, example: 'BANK' })
+  @ApiProperty({ enum: AccountTypeEnum, example: 'PAY_NOW' })
   @IsEnum(AccountTypeEnum)
   type: AccountTypeEnum;
 
