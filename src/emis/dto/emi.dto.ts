@@ -7,10 +7,10 @@ export class CreateEmiDto {
   @IsNotEmpty()
   name: string;
 
-  @ApiProperty({ example: 'account-uuid' })
+  @ApiPropertyOptional({ example: 'account-uuid' })
   @IsString()
-  @IsNotEmpty()
-  accountId: string;
+  @IsOptional()
+  accountId?: string;
 
   @ApiPropertyOptional({ example: 'transaction-uuid', description: 'Original transaction if any' })
   @IsString()
@@ -39,6 +39,11 @@ export class CreateEmiDto {
   @ApiProperty({ example: '2024-06-05' })
   @IsDateString()
   nextDueDate: string;
+
+  @ApiPropertyOptional({ example: 5, description: 'Months already crossed' })
+  @IsNumber()
+  @IsOptional()
+  monthsPaid?: number;
 }
 
 export class UpdateEmiDto {

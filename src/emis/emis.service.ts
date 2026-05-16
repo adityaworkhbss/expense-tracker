@@ -7,13 +7,18 @@ export class EmisService {
   constructor(private prisma: PrismaService) {}
 
   async create(userId: string, dto: CreateEmiDto) {
-    const account = await this.prisma.account.findUnique({
-      where: { id: dto.accountId }
-    });
+    if (dto.accountId) {
+      const account = await this.prisma.account.findUnique({
+        where: { id: dto.accountId }
+      });
 
-    if (!account || account.userId !== userId) {
-      throw new BadRequestException('Invalid account ID');
+      if (!account || account.userId !== userId) {
+        throw new BadRequestException('Invalid account ID');
+      }
     }
+
+    const monthsPaid = dto.monthsPaid ?? 0;
+    const remainingBalance = Math.max(0, Number(dto.principal) - (monthsPaid * Number(dto.monthlyEmi)));
 
     return this.prisma.emi.create({
       data: {
@@ -26,8 +31,9 @@ export class EmisService {
         monthlyEmi: dto.monthlyEmi,
         startDate: new Date(dto.startDate),
         nextDueDate: new Date(dto.nextDueDate),
-        remainingBalance: dto.principal,
-        active: true,
+        remainingBalance: remainingBalance,
+        monthsPaid: monthsPaid,
+        active: monthsPaid < dto.tenure,
       },
     });
   }
