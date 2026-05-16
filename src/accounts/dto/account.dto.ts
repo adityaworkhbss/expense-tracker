@@ -29,6 +29,11 @@ export class CreateAccountDto {
   @Type(() => Number)
   @IsNumber({ maxDecimalPlaces: 2 })
   openingBalance?: number;
+
+  @ApiPropertyOptional({ example: 'user-uuid' })
+  @IsOptional()
+  @IsString()
+  userId?: string;
 }
 
 export class UpdateAccountDto {

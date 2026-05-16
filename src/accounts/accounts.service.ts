@@ -26,9 +26,10 @@ export class AccountsService {
   }
 
   async create(userId: string, dto: CreateAccountDto) {
+    const targetUserId = dto.userId || userId;
     const account = await this.prisma.account.create({
       data: {
-        userId,
+        userId: targetUserId,
         name: dto.name,
         type: dto.type,
         openingBalance: dto.openingBalance ?? 0,
@@ -38,7 +39,7 @@ export class AccountsService {
 
     await this.prisma.auditLog.create({
       data: {
-        userId,
+        userId: targetUserId,
         action: 'CREATE',
         entityType: 'Account',
         entityId: account.id,
@@ -53,9 +54,10 @@ export class AccountsService {
     return this.prisma.$transaction(async (tx) => {
       const createdAccounts: any[] = [];
       for (const dto of dtos) {
+        const targetUserId = dto.userId || userId;
         const account = await tx.account.create({
           data: {
-            userId,
+            userId: targetUserId,
             name: dto.name,
             type: dto.type,
             openingBalance: dto.openingBalance ?? 0,
@@ -66,7 +68,7 @@ export class AccountsService {
 
         await tx.auditLog.create({
           data: {
-            userId,
+            userId: targetUserId,
             action: 'CREATE',
             entityType: 'Account',
             entityId: account.id,
