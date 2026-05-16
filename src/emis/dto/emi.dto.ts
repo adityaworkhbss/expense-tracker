@@ -23,10 +23,11 @@ export class CreateEmiDto {
   @IsOptional()
   principal?: number;
 
-  @ApiProperty({ example: 60, description: 'Tenure in months' })
+  @ApiPropertyOptional({ example: 60, description: 'Tenure in months' })
   @IsNumber()
   @Min(1)
-  tenure: number;
+  @IsOptional()
+  tenure?: number;
 
   @ApiProperty({ example: 10000, description: 'Monthly EMI amount' })
   @IsNumber()

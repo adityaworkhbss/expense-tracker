@@ -18,15 +18,16 @@ export class EmisService {
     }
 
     const monthsPaid = dto.monthsPaid ?? 0;
-    const principal = dto.principal ?? (Number(dto.monthlyEmi) * dto.tenure);
+    const tenure = dto.tenure ?? (dto.principal ? Math.ceil(Number(dto.principal) / Number(dto.monthlyEmi)) : 0);
+    const principal = dto.principal ?? (Number(dto.monthlyEmi) * tenure);
     const remainingBalance = Math.max(0, principal - (monthsPaid * Number(dto.monthlyEmi)));
     
     const startDate = new Date(dto.startDate);
     
     // Calculate endDate if not provided: startDate + tenure months
     const endDate = dto.endDate ? new Date(dto.endDate) : new Date(startDate);
-    if (!dto.endDate) {
-      endDate.setMonth(endDate.getMonth() + dto.tenure);
+    if (!dto.endDate && tenure > 0) {
+      endDate.setMonth(endDate.getMonth() + tenure);
     }
 
     // Calculate nextDueDate if not provided: startDate + monthsPaid + 1 month
@@ -42,14 +43,14 @@ export class EmisService {
         transactionId: dto.transactionId,
         name: dto.name,
         principal: principal,
-        tenure: dto.tenure,
+        tenure: tenure,
         monthlyEmi: dto.monthlyEmi,
         startDate: startDate,
-        endDate: endDate,
+        endDate: tenure > 0 ? endDate : null,
         nextDueDate: nextDueDate,
         remainingBalance: remainingBalance,
         monthsPaid: monthsPaid,
-        active: monthsPaid < dto.tenure,
+        active: tenure > 0 ? monthsPaid < tenure : true,
       },
     });
   }
