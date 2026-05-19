@@ -13,6 +13,8 @@ import { EmisModule } from './emis/emis.module';
 import { ObligationsModule } from './obligations/obligations.module';
 import { CategoriesModule } from './categories/categories.module';
 import { AccountsModule } from './accounts/accounts.module';
+import { UserCustomizationModule } from './user-customization/user-customization.module';
+import { ParseTransactionModule } from './parse-transaction/parse-transaction.module';
 
 @Module({
   imports: [
@@ -27,7 +29,9 @@ import { AccountsModule } from './accounts/accounts.module';
     EmisModule, 
     ObligationsModule,
     CategoriesModule,
-    AccountsModule
+    AccountsModule,
+    UserCustomizationModule,
+    ParseTransactionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

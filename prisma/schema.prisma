@@ -25,6 +25,7 @@ model User {
   budgets               Budget[]
   categories            Category[]
   creditCards           CreditCard[]
+  customization         UserCustomization?
   emis                  Emi[]
   recurringTransactions RecurringTransaction[]
   refreshTokens         RefreshToken[]
@@ -32,6 +33,19 @@ model User {
   transactions          Transaction[]
 
   @@map("users")
+}
+
+model UserCustomization {
+  id            String   @id @default(uuid())
+  userId        String   @unique @map("user_id")
+  aiTransaction Boolean  @default(false) @map("ai_transaction")
+  reminder      Boolean  @default(false)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("user_customizations")
 }
 
 model RefreshToken {

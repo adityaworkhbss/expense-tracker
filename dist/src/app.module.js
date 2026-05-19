@@ -22,6 +22,8 @@ const emis_module_1 = require("./emis/emis.module");
 const obligations_module_1 = require("./obligations/obligations.module");
 const categories_module_1 = require("./categories/categories.module");
 const accounts_module_1 = require("./accounts/accounts.module");
+const user_customization_module_1 = require("./user-customization/user-customization.module");
+const parse_transaction_module_1 = require("./parse-transaction/parse-transaction.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -39,7 +41,9 @@ exports.AppModule = AppModule = __decorate([
             emis_module_1.EmisModule,
             obligations_module_1.ObligationsModule,
             categories_module_1.CategoriesModule,
-            accounts_module_1.AccountsModule
+            accounts_module_1.AccountsModule,
+            user_customization_module_1.UserCustomizationModule,
+            parse_transaction_module_1.ParseTransactionModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
