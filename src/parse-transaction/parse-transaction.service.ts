@@ -224,7 +224,7 @@ USER INPUT: "${text}"`;
   private async callGemini(prompt: string): Promise<string | null> {
     try {
       const model = this.genAI!.getGenerativeModel({
-        model: 'gemini-2.0-flash',
+        model: 'gemini-3.1-flash-lite',
         generationConfig: {
           temperature: 0.1,        // low temp = deterministic
           maxOutputTokens: 500,
